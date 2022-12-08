@@ -26,6 +26,11 @@
   },
   "homepage": "https://github.com/ivanlewin/moneywallet-web",
   "dependencies": {
+    "@emotion/react": "^11.10.5",
+    "@emotion/styled": "^11.10.5",
+    "@fontsource/roboto": "^4.5.8",
+    "@mui/icons-material": "^5.10.16",
+    "@mui/material": "^5.10.17",
     "next": "latest",
     "next-pwa": "^5.6.0",
     "react": "^18.2.0",
