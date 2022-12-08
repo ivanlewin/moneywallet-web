@@ -4,7 +4,7 @@ import { DateSchema, DatetimeSchema } from './datetime';
 export const CurrencySchema = z.object({
   iso: z.string().length(3), // ISO 4217,
   name: z.string(),
-  symbol: z.string(),
+  symbol: z.string().optional(),
   decimals: z.number().int().min(0).max(8),
   favourite: z.boolean(),
   last_edit: z.number(), // timestamp
@@ -143,10 +143,10 @@ export const TransactionSchema = z.object({
   direction: TransactionDirectionSchema,
   type: TransactionTypeSchema,
   wallet: z.string().uuid(),
-  note: z.string(),
+  note: z.string().optional(),
   confirmed: z.boolean(),
   count_in_total: z.boolean(),
-  id: z.string().uuid(),
+  id: z.string(), // uuid but could have a date appended to the end
   last_edit: z.number(), // timestamp
   deleted: z.boolean(),
   debt: z.string().uuid().optional(),
@@ -197,7 +197,7 @@ export const TransferSchema = z.object({
   note: z.string(),
   confirmed: z.boolean(),
   count_in_total: z.boolean(),
-  id: z.string().uuid(),
+  id: z.string(), // uuid but could have a date appended to the end
   last_edit: z.number(), // timestamp
   deleted: z.boolean(),
 });
@@ -251,6 +251,6 @@ export const DatabaseSchema = z.object({
   transfer_people: z.array(TransferPersonSchema),
   transfer_models: z.array(TransferModelSchema),
   attachments: z.array(AttachmentSchema),
-  transaction_attachments: z.array(TransactionAttachmentSchema),
-  transfer_attachments: z.array(TransferAttachmentSchema),
+  transaction_attachment: z.array(TransactionAttachmentSchema),
+  transfer_attachment: z.array(TransferAttachmentSchema),
 });
