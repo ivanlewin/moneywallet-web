@@ -3,19 +3,15 @@ import { DatabaseSchema } from 'schemas';
 import { Database } from 'types';
 import { isLocalStorageAvailable } from 'utils';
 
-type DatabaseContextType = {
-  database: Database | undefined;
-};
-
-const DatabaseContext = createContext<DatabaseContextType>({
-  database: undefined,
+const DatabaseContext = createContext({
+  database: {} as Partial<Database>,
 });
 
 type DatabaseProviderProps = {
   children: ReactNode;
 };
 export const DatabaseProvider = ({ children }: DatabaseProviderProps) => {
-  const [database, setDatabase] = useState<Database>();
+  const [database, setDatabase] = useState<Partial<Database>>({});
 
   useEffect(() => {
     try {

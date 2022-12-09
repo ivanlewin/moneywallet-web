@@ -125,8 +125,8 @@ export const TransactionCategorySchema = z.union([
   z.literal("system-uuid-system::transfer_tax"),
 ]);
 export const TransactionDirectionSchema = z.union([
-  z.literal(0),
-  z.literal(1),
+  z.literal(0), // expense
+  z.literal(1), // income
 ]);
 export const TransactionTypeSchema = z.union([
   z.literal(0), // 

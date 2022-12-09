@@ -1,21 +1,23 @@
 import { Drawer, Hidden, SwipeableDrawer } from "@mui/material";
 import { ReactNode, useState } from "react";
+import SearchAppBar from "./SearchAppBar";
+import Sidebar from "./Sidebar";
 
 type LayoutProps = {
   children?: ReactNode;
 };
 
-function Layout({ children }: LayoutProps) {
+export default function Layout({ children }: LayoutProps) {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const onDrawerOpen = () => { setDrawerOpen(true); };
   const onDrawerClose = () => { setDrawerOpen(false); };
-  const classes = {} as any;
 
   return (
-    <div className={classes.root}>
+    <div >
+      <SearchAppBar onClick={() => setDrawerOpen(!drawerOpen)} />
       <Hidden mdDown>
-        <Drawer open variant='persistent' className={classes.hiddenOnPrint}>
-
+        <Drawer open variant='persistent'>
+          <Sidebar />
         </Drawer>
       </Hidden>
       <Hidden lgUp>
@@ -24,15 +26,13 @@ function Layout({ children }: LayoutProps) {
           open={drawerOpen}
           onOpen={onDrawerOpen}
           onClose={onDrawerClose}
-          className={classes.hiddenOnPrint}
         >
+          <Sidebar />
         </SwipeableDrawer>
       </Hidden>
-      <main className={classes.main}>
+      <main >
         {children}
       </main>
     </div>
   );
 };
-
-export default Layout;
