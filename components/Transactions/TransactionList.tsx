@@ -1,9 +1,10 @@
-import { List, ListItem, ListItemAvatar, ListItemButton, ListItemIcon, ListItemProps, ListItemText, ListSubheader } from "@mui/material";
+import { List, ListItem, ListItemAvatar, ListItemButton, ListItemIcon, ListItemProps, ListItemText, ListSubheader, Typography } from "@mui/material";
 import Icon from "components/Icon";
 import { useDatabase } from "contexts/database";
 import React from "react";
 import { IconSchema } from "schemas";
 import { Transaction, Wallet } from "types";
+import { calculateBalance } from "utils";
 import { formatCurrency, formatDate } from "utils/formatting";
 import TransactionListItem from "./TransactionListItem";
 
@@ -14,7 +15,7 @@ type transactionsByDate = {
 export default function TransactionList() {
   const { database } = useDatabase();
   const { transactions } = database;
-  const transactions_ = transactions?.sort((a, b) => a.date.localeCompare(b.date)).slice(-100); // REMOVE
+  const transactions_ = transactions?.sort((a, b) => a.date.localeCompare(b.date)).slice(-300); // REMOVE
 
   const transactionsByDate = React.useMemo<transactionsByDate>(() => {
     if (!transactions_) {
@@ -37,11 +38,10 @@ export default function TransactionList() {
     <List
       sx={{
         width: '100%',
-        maxWidth: 360,
         bgcolor: 'background.paper',
         position: 'relative',
         overflow: 'auto',
-        maxHeight: 300,
+        height: '100vh',
         '& ul': { padding: 0 },
       }}
       subheader={<li />}
@@ -49,7 +49,17 @@ export default function TransactionList() {
       {Object.entries(transactionsByDate).map(([date, transactionsOfTheDay]) => (
         <li key={date}>
           <ul>
-            <ListSubheader>{formatDate(date)}</ListSubheader>
+            <ListSubheader
+              sx={{
+                display: 'flex',
+                flexDirection: 'row',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+              }}
+            >
+              {formatDate(date)}
+              {/* <Typography>{calculateBalance(transactionsOfTheDay)}</Typography> */}
+            </ListSubheader>
             {transactionsOfTheDay.map(transaction => (
               <TransactionListItem
                 key={transaction.id}

@@ -31,7 +31,7 @@ export default function WalletListItem({ selected, onClick, wallet }: WalletList
     if (!walletCurrency || !transactions) {
       return '';
     }
-    const balance = calculateBalance(id, transactions);
+    const balance = calculateBalance(transactions, id);
     return formatCurrency(balance, walletCurrency);
   }, [transactions, id, walletCurrency]);
 
