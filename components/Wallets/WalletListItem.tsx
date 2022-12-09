@@ -14,8 +14,8 @@ type WalletListItemProps = ListItemProps & {
 export default function WalletListItem({ selected, onClick, wallet }: WalletListItemProps) {
   const { database } = useDatabase();
   const { transactions, currencies } = database || {};
-  const { icon, id, } = wallet;
-  const walletCurrency = currencies?.find(c => c.iso === wallet.currency);
+  const { icon, id, currency, name } = wallet;
+  const walletCurrency = currencies?.find(c => c.iso === currency);
 
   const walletIcon = React.useMemo(() => {
     try {
@@ -42,7 +42,7 @@ export default function WalletListItem({ selected, onClick, wallet }: WalletList
           <Icon {...({ type: 'color', name: 'W', color: '#1976D2' })} />
           {/* <Icon {...(walletIcon)} /> */}
         </ListItemIcon>
-        <ListItemText primary={wallet.name} secondary={walletBalance} />
+        <ListItemText primary={name} secondary={walletBalance} />
       </ListItemButton>
     </ListItem>
   );
