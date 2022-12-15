@@ -18,6 +18,11 @@ export default function SidebarHeader(props: SidebarHeaderProps) {
   return (
     <Accordion
       elevation={0}
+      sx={{
+        '& .MuiAccordionSummary-root': {
+          minHeight: 64
+        }
+      }}
       {...props}
     >
       <AccordionSummary expandIcon={<ExpandMoreIcon />}>

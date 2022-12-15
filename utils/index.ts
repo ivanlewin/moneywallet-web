@@ -10,21 +10,22 @@ export function isLocalStorageAvailable() {
   );
 }
 
-export function signAmount(amount: number, direction: number) {
+export function signAmount(amount: number, direction?: number) {
   return amount * (direction === 0 ? -1 : 1);
 }
 
-export function calculateBalance(transactions: Transaction[], walletID?: Wallet['id']) {
+export function calculateBalance(transactions: Transaction[], wallet?: Wallet) {
   return transactions
     .filter(transaction => (
       transaction.confirmed === true &&
       transaction.count_in_total === true &&
       transaction.deleted === false &&
-      (walletID ? transaction.wallet === walletID : true)
+      (wallet ? transaction.wallet === wallet.id : true)
     ))
     .reduce((acc, { money, direction }) => (
       acc + signAmount(money, direction)
-    ), 0);
+    ), 0)
+    + (wallet?.start_money || 0);
 }
 
 export function calculateBalancesForTheDay(transactions: Transaction[]) {

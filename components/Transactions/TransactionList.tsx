@@ -1,12 +1,13 @@
-import { List, ListItem, ListItemAvatar, ListItemButton, ListItemIcon, ListItemProps, ListItemText, ListSubheader, Typography } from "@mui/material";
-import Icon from "components/Icon";
-import { useDatabase } from "contexts/database";
-import React from "react";
-import { IconSchema } from "schemas";
-import { Transaction, Wallet } from "types";
-import { calculateBalance } from "utils";
-import { formatCurrency, formatDate } from "utils/formatting";
-import TransactionListItem from "./TransactionListItem";
+import { useDatabase } from 'contexts/database';
+import React from 'react';
+import { Transaction } from 'types';
+import { calculateBalance } from 'utils';
+import { formatDate } from 'utils/formatting';
+
+import { List, ListSubheader } from '@mui/material';
+
+import TransactionListItem from './TransactionListItem';
+import CurrencyDisplay from 'components/Currencies/CurrencyDisplay';
 
 type transactionsByDate = {
   [date: string]: Transaction[];
@@ -58,7 +59,7 @@ export default function TransactionList() {
               }}
             >
               {formatDate(date)}
-              {/* <Typography>{calculateBalance(transactionsOfTheDay)}</Typography> */}
+              <CurrencyDisplay amount={calculateBalance(transactionsOfTheDay)} />
             </ListSubheader>
             {transactionsOfTheDay.map(transaction => (
               <TransactionListItem

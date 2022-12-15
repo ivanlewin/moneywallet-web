@@ -1,4 +1,4 @@
-import { Drawer, Hidden, SwipeableDrawer } from "@mui/material";
+import { Box, Drawer, Hidden, SwipeableDrawer, useTheme } from "@mui/material";
 import { ReactNode, useState } from "react";
 import SearchAppBar from "./SearchAppBar";
 import Sidebar from "./Sidebar";
@@ -11,10 +11,15 @@ export default function Layout({ children }: LayoutProps) {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const onDrawerOpen = () => { setDrawerOpen(true); };
   const onDrawerClose = () => { setDrawerOpen(false); };
+  const theme = useTheme();
 
   return (
-    <div >
-      <SearchAppBar onClick={() => setDrawerOpen(!drawerOpen)} />
+    <Box sx={{
+      [theme.breakpoints.up('md')]: {
+        display: 'flex',
+      },
+    }}>
+      <SearchAppBar hamburgerOnClick={() => setDrawerOpen(!drawerOpen)} />
       <Hidden mdDown>
         <Drawer open variant='persistent'>
           <Sidebar />
@@ -22,7 +27,6 @@ export default function Layout({ children }: LayoutProps) {
       </Hidden>
       <Hidden lgUp>
         <SwipeableDrawer
-          keepMounted
           open={drawerOpen}
           onOpen={onDrawerOpen}
           onClose={onDrawerClose}
@@ -30,9 +34,17 @@ export default function Layout({ children }: LayoutProps) {
           <Sidebar />
         </SwipeableDrawer>
       </Hidden>
-      <main >
+      <Box component='main'
+        sx={{
+          width: '100%',
+          overflowX: 'auto',
+          flexGrow: 1,
+          [theme.breakpoints.up('md')]: {
+            marginLeft: 2,
+          }
+        }}>
         {children}
-      </main>
-    </div>
+      </Box>
+    </Box>
   );
 };

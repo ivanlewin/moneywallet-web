@@ -1,34 +1,39 @@
-import { ListItem, ListItemAvatar, ListItemProps, ListItemText, Typography } from "@mui/material";
-import CurrencyDisplay from "components/Currencies/CurrencyDisplay";
-import Icon from "components/Icon";
-import { useDatabase } from "contexts/database";
-import React from "react";
-import { IconSchema } from "schemas";
-import { Transaction } from "types";
-import { formatTime } from "utils/formatting";
+import CurrencyDisplay from 'components/Currencies/CurrencyDisplay';
+import Icon from 'components/Icons/Icon';
+import { useDatabase } from 'contexts/database';
+import { useRouter } from 'next/router';
+import React from 'react';
+import { IconSchema } from 'schemas';
+import { Transaction } from 'types';
+import { formatTime } from 'utils/formatting';
 
+import { ListItem, ListItemAvatar, ListItemProps, ListItemText, Typography } from '@mui/material';
+
+import type { Icon as IconType } from "types";
 type TransactionListItemProps = ListItemProps & {
   transaction: Transaction;
 };
 export default function TransactionListItem({ transaction, ...props }: TransactionListItemProps) {
   const { database } = useDatabase();
+  const router = useRouter();
   const { categories, currencies, wallets } = database || {};
 
   const transactionCategory = categories?.find(category => category.id === transaction.category);
   const transactionWallet = wallets?.find(wallet => wallet.id === transaction.wallet);
   const transactionCurrency = currencies?.find(currencies => currencies.iso === transactionWallet?.currency);
 
+  const goToDetail = () => {
+    router.push('/transactions/[transactionID]', `/transactions/${transaction.id}`);
+  };
+
   const transactionIcon = React.useMemo(() => {
+    const fallback = { type: 'color', name: 'Transaction', color: '#2196F3' } as IconType;
     if (!transactionCategory) {
-      return null;
+      return fallback;
     }
-    try {
-      const object = JSON.parse(transactionCategory.icon);
-      return IconSchema.parse(object) || null;
-    } catch (error) {
-      console.error(error);
-      return null;
-    }
+    const object = JSON.parse(transactionCategory.icon);
+    const icon = IconSchema.safeParse(object);
+    return icon.success === true ? icon.data : fallback;
   }, [transactionCategory]);
 
   if (!transactionCurrency) {
@@ -36,15 +41,15 @@ export default function TransactionListItem({ transaction, ...props }: Transacti
   }
 
   return (
-    <ListItem key={transaction.id} {...props}>
-      <ListItemAvatar>
-        <Icon {...(transactionIcon || { type: 'color', name: 'Transaction', color: '#1976D2' })} />
+    <ListItem key={transaction.id} onClick={goToDetail} {...props}>
+      <ListItemAvatar >
+        <Icon {...transactionIcon} />
       </ListItemAvatar>
       <ListItemText
         sx={{
           display: 'flex',
           flexDirection: 'column',
-          '& > *:nth-child(2)': {
+          '& > .MuiListItemText-secondary': {
             textOverflow: 'ellipsis',
             maxWidth: 200,
             overflow: 'hidden',

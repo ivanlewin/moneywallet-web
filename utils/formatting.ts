@@ -3,13 +3,15 @@ import localizedFormat from "dayjs/plugin/localizedFormat";
 dayjs.extend(localizedFormat);
 import { Currency } from "types";
 
-export function formatCurrency(amount: number, currency: Currency) {
+const defaultCurrency = { decimals: 2, iso: 'USD' };
+const defaultOptions = { style: 'currency', currencyDisplay: 'narrowSymbol', };
+export function formatCurrency(
+  amount: number,
+  currency: Pick<Currency, 'decimals' | 'iso'> = defaultCurrency,
+  options: Intl.NumberFormatOptions = {}
+) {
   const locale = navigator.language;
-  const intl = new Intl.NumberFormat(locale, {
-    style: 'currency',
-    currency: currency.iso,
-    currencyDisplay: 'narrowSymbol',
-  });
+  const intl = new Intl.NumberFormat(locale, { currency: currency.iso, ...defaultOptions, ...options, });
   return intl.format(amount / (10 ** currency.decimals));
 }
 
