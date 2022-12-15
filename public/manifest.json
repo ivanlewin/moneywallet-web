@@ -3,11 +3,11 @@
   "short_name": "MoneyWallet Web",
   "start_url": "/",
   "background_color": "#1E87DB",
-  "display": "fullscreen",
+  "display": "standalone",
   "scope": "/",
   "theme_color": "#1E87DB",
   "description": "Expense tracker",
-  "orientation": "portrait",
+  "orientation": "portrait-primary",
   "icons": [
     {
       "src": "icons/maskable_icon_x48.png",
