@@ -10,11 +10,11 @@ import { ListItem, ListItemButton, ListItemIcon, ListItemProps, ListItemText } f
 
 import type { Icon as IconType } from "types";
 
-type WalletListItemProps = ListItemProps & {
+type TotalWalletListItemProps = ListItemProps & {
   wallet: Wallet;
   selected: boolean;
 };
-export default function WalletListItem({ selected, wallet, ...props }: WalletListItemProps) {
+export default function TotalWalletListItem({ selected, wallet, ...props }: TotalWalletListItemProps) {
   const { database } = useDatabase();
   const { transactions, currencies } = database || {};
   const { icon, id, currency, name } = wallet;
@@ -39,7 +39,7 @@ export default function WalletListItem({ selected, wallet, ...props }: WalletLis
     <ListItem disablePadding {...props}>
       <ListItemButton selected={selected}>
         <ListItemIcon>
-          <Icon {...(walletIcon)} />
+          <Icon color='#000000' name='Total' type='color' />
         </ListItemIcon>
         <ListItemText primary={name} secondary={walletBalance} />
       </ListItemButton>

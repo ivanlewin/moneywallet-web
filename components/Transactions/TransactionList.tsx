@@ -42,8 +42,12 @@ export default function TransactionList() {
         bgcolor: 'background.paper',
         position: 'relative',
         overflow: 'auto',
-        height: '100vh',
-        '& ul': { padding: 0 },
+        '@media (pointer:none), (pointer:coarse)': {
+          height: '100vh',
+        },
+        '& ul': {
+          padding: 0
+        },
       }}
       subheader={<li />}
     >

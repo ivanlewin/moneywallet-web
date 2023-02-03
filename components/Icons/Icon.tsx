@@ -18,7 +18,6 @@ export default function Icon(props: IconType) {
             height: 40,
             width: 40,
             p: '0.3em',
-            fontSize: '1.25rem',
             listStyle: 'none',
             boxSizing: 'border-box',
             position: 'relative',

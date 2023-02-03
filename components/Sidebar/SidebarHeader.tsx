@@ -7,11 +7,14 @@ import { Accordion, AccordionDetails, AccordionProps, AccordionSummary, List, Ty
 import WalletListItem from '../Wallets/WalletListItem';
 
 import type { Wallet } from 'types';
+import NewWalletListItem from 'components/Wallets/NewWalletListItem';
+import ManageWalletsListItem from 'components/Wallets/ManageWalletsListItem';
+import TotalWalletListItem from 'components/Wallets/TotalWalletListItem';
 
 export type SidebarHeaderProps = Omit<AccordionProps, 'children'>;
 export default function SidebarHeader(props: SidebarHeaderProps) {
   const { database } = useDatabase();
-  const [selectedWallet, setSelectedWallet] = React.useState<Wallet['id']>();
+  const [selectedWallet, setSelectedWallet] = React.useState<Wallet['id'] | 'total'>();
   const { wallets } = database;
   const walletList: Wallet[] | undefined = wallets?.filter(wallet => wallet.archived === false && wallet.deleted === false).sort((a, b) => a.index - b.index);
 
@@ -34,10 +37,17 @@ export default function SidebarHeader(props: SidebarHeaderProps) {
             <WalletListItem
               key={wallet.id}
               wallet={wallet}
-              selected={wallet.id === selectedWallet}
+              selected={selectedWallet === wallet.id}
               onClick={() => setSelectedWallet(wallet.id)}
             />
           ))}
+          {/* <TotalWalletListItem
+            wallet={'total'}
+            selected={selectedWallet === 'total'}
+            onClick={() => setSelectedWallet('total')}
+          /> */}
+          <NewWalletListItem />
+          <ManageWalletsListItem />
         </List>
       </AccordionDetails>
     </Accordion>
