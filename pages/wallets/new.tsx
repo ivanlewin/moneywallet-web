@@ -1,6 +1,6 @@
 import BackButton from 'components/common/BackButton';
 import CurrencyDisplay from 'components/Currencies/CurrencyDisplay';
-import { useDatabase } from 'contexts/database';
+import { useDatabase } from 'contexts/DatabaseContext';
 import { NextPage } from 'next';
 import { useRouter } from 'next/router';
 
@@ -31,7 +31,7 @@ const NewWallet: NextPage = () => {
   return (
     <Card>
       <CardContent sx={{ p: 0 }}>
-        <Grid container sx={{ background: 'lightblue' }}>
+        <Grid container sx={{ background: '#2196F3' }}>
           <Grid container sx={{
             alignItems: 'center',
           }}>

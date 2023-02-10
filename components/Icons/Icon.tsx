@@ -1,5 +1,5 @@
 import { Avatar, Icon as MUIIcon } from "@mui/material";
-import type { Icon as IconType } from "types";
+import type { Icon as IconType } from 'types/database';
 import { iconMapping } from "./icon-mapping";
 
 export default function Icon(props: IconType) {

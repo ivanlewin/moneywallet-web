@@ -1,4 +1,4 @@
-import { useDatabase } from 'contexts/database';
+import { useDatabase } from 'contexts/DatabaseContext';
 import * as React from 'react';
 
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
@@ -6,7 +6,7 @@ import { Accordion, AccordionDetails, AccordionProps, AccordionSummary, List, Ty
 
 import WalletListItem from '../Wallets/WalletListItem';
 
-import type { Wallet } from 'types';
+import type { Wallet } from 'types/database';
 import NewWalletListItem from 'components/Wallets/NewWalletListItem';
 import ManageWalletsListItem from 'components/Wallets/ManageWalletsListItem';
 import TotalWalletListItem from 'components/Wallets/TotalWalletListItem';

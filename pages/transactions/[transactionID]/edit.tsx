@@ -1,7 +1,7 @@
 import { NextPage } from 'next';
 import { useRouter } from 'next/router';
 
-import TransactionForm from 'components/Transactions/TransactionDetail';
+import TransactionForm from 'components/Transactions/TransactionForm';
 import { useTransactionUtils } from 'contexts/TransactionUtils';
 
 const TransactionDetail: NextPage = () => {

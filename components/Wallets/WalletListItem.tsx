@@ -1,14 +1,14 @@
 import Icon from 'components/Icons/Icon';
-import { useDatabase } from 'contexts/database';
+import { useDatabase } from 'contexts/DatabaseContext';
 import React from 'react';
 import { IconSchema } from 'schemas';
-import { Wallet } from 'types';
+import { Wallet } from 'types/database';
 import { calculateBalance } from 'utils';
 import { formatCurrency } from 'utils/formatting';
 
 import { ListItem, ListItemButton, ListItemIcon, ListItemProps, ListItemText } from '@mui/material';
 
-import type { Icon as IconType } from "types";
+import type { Icon as IconType } from 'types/database';
 
 type WalletListItemProps = ListItemProps & {
   wallet: Wallet;
@@ -33,7 +33,7 @@ export default function WalletListItem({ selected, wallet, ...props }: WalletLis
     }
     const balance = calculateBalance(transactions, wallet);
     return formatCurrency(balance, walletCurrency);
-  }, [transactions, id, walletCurrency]);
+  }, [walletCurrency, transactions, wallet]);
 
   return (
     <ListItem disablePadding {...props}>

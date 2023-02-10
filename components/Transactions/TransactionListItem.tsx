@@ -1,15 +1,15 @@
 import CurrencyDisplay from 'components/Currencies/CurrencyDisplay';
 import Icon from 'components/Icons/Icon';
-import { useDatabase } from 'contexts/database';
+import { useDatabase } from 'contexts/DatabaseContext';
 import { useRouter } from 'next/router';
 import React from 'react';
 import { IconSchema } from 'schemas';
-import { Transaction } from 'types';
+import { Transaction } from 'types/database';
 import { formatTime } from 'utils/formatting';
 
 import { ListItem, ListItemAvatar, ListItemProps, ListItemText, Typography } from '@mui/material';
 
-import type { Icon as IconType } from "types";
+import type { Icon as IconType } from 'types/database';
 type TransactionListItemProps = ListItemProps & {
   transaction: Transaction;
 };
@@ -41,7 +41,12 @@ export default function TransactionListItem({ transaction, ...props }: Transacti
   }
 
   return (
-    <ListItem key={transaction.id} onClick={goToDetail} {...props}>
+    <ListItem
+      {...props}
+      onClick={goToDetail}
+      sx={{ ...props.sx, cursor: 'pointer' }}
+      title='Show transaction detail'
+    >
       <ListItemAvatar >
         <Icon {...transactionIcon} />
       </ListItemAvatar>
@@ -49,9 +54,9 @@ export default function TransactionListItem({ transaction, ...props }: Transacti
         sx={{
           display: 'flex',
           flexDirection: 'column',
+          // maxWidth: 200,
           '& > .MuiListItemText-secondary': {
             textOverflow: 'ellipsis',
-            maxWidth: 200,
             overflow: 'hidden',
             whiteSpace: 'nowrap',
           }
@@ -66,6 +71,7 @@ export default function TransactionListItem({ transaction, ...props }: Transacti
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'flex-end',
+          flexShrink: 0
         }}
         primary={
           <CurrencyDisplay
