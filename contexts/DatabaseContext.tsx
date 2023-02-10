@@ -1,16 +1,22 @@
 import { createContext, ReactNode, useContext, useEffect, useState } from 'react';
 import { DatabaseSchema } from 'schemas';
-import { Database } from 'types';
+import { Database } from 'types/database';
 import { isLocalStorageAvailable } from 'utils';
 
-const DatabaseContext = createContext({
-  database: {} as Partial<Database>,
+type DatabaseContextValue = {
+  database: Partial<Database>,
+};
+
+const DatabaseContext = createContext<DatabaseContextValue>({
+  database: {},
 });
+
+export const useDatabase = () => useContext(DatabaseContext);
 
 type DatabaseProviderProps = {
   children: ReactNode;
 };
-export const DatabaseProvider = ({ children }: DatabaseProviderProps) => {
+const DatabaseProvider = ({ children }: DatabaseProviderProps) => {
   const [database, setDatabase] = useState<Partial<Database>>({});
 
   useEffect(() => {
@@ -37,4 +43,4 @@ export const DatabaseProvider = ({ children }: DatabaseProviderProps) => {
   );
 };
 
-export const useDatabase = () => useContext(DatabaseContext);
+export default DatabaseProvider;
