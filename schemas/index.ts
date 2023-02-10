@@ -84,11 +84,36 @@ export const CategorySchema = z.object({
   deleted: z.boolean(),
 });
 
-export const EventSchema = z.any();
+export const EventSchema = z.object({
+  name: z.string(),
+  icon: z.string(), // Icon
+  note: z.string().optional(),
+  start_date: z.string(),
+  end_date: z.string(),
+  id: z.string().uuid(),
+  last_edit: z.number(), // timestamp
+  deleted: z.boolean(),
+});
 
-export const PlaceSchema = z.any();
+export const PlaceSchema = z.object({
+  name: z.string(),
+  icon: z.string(), // Icon
+  address: z.string().optional(),
+  latitude: z.number().optional(),
+  longituude: z.number().optional(),
+  id: z.string().uuid(),
+  last_edit: z.number(), // timestamp
+  deleted: z.boolean(),
+});
 
-export const PersonSchema = z.any();
+export const PersonSchema = z.object({
+  name: z.string(),
+  icon: z.string(), // Icon
+  note: z.string().optional(),
+  id: z.string().uuid(),
+  last_edit: z.number(), // timestamp
+  deleted: z.boolean(),
+});
 
 export const EventPersonSchema = z.any();
 
@@ -143,7 +168,9 @@ export const TransactionSchema = z.object({
   direction: TransactionDirectionSchema,
   type: TransactionTypeSchema,
   wallet: z.string().uuid(),
+  place: z.string().optional(),
   note: z.string().optional(),
+  event: z.string().optional(),
   confirmed: z.boolean(),
   count_in_total: z.boolean(),
   id: z.string(), // uuid but could have a date appended to the end
@@ -172,7 +199,13 @@ export const RecurrentTransactionSchema = TransactionSchema.pick({
   deleted: z.boolean(),
 });
 
-export const TransactionPersonSchema = z.any();
+export const TransactionPersonSchema = z.object({
+  transaction: z.string().uuid(),
+  person: z.string().uuid(),
+  id: z.string().uuid(),
+  last_edit: z.number(), // timestamp
+  deleted: z.boolean(),
+});
 
 export const TransactionModelSchema = TransactionSchema.pick({
   money: true,

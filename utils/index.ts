@@ -1,4 +1,4 @@
-import { Transaction, Wallet } from "types";
+import { Transaction, Wallet } from 'types/database';
 
 export function isLocalStorageAvailable() {
   return (
