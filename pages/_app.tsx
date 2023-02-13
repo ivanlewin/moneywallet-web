@@ -1,7 +1,8 @@
-import Head from 'next/head';
-import { AppProps } from 'next/app';
 import DatabaseProvider from 'contexts/DatabaseContext';
 import TransactionUtilsProvider from 'contexts/TransactionUtils';
+import TransferUtilsProvider from 'contexts/TransferUtils';
+import { AppProps } from 'next/app';
+import Head from 'next/head';
 import '../styles/globals.css';
 
 export default function MyApp({ Component, pageProps }: AppProps) {
@@ -20,7 +21,9 @@ export default function MyApp({ Component, pageProps }: AppProps) {
       </Head>
       <DatabaseProvider>
         <TransactionUtilsProvider>
-          <Component {...pageProps} />
+          <TransferUtilsProvider>
+            <Component {...pageProps} />
+          </TransferUtilsProvider>
         </TransactionUtilsProvider>
       </DatabaseProvider>
     </>

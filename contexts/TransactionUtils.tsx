@@ -4,14 +4,14 @@ import { Category, Currency, Transaction, Wallet, Event, Person, Place } from 't
 import { useDatabase } from './DatabaseContext';
 
 type TransactionUtilsValue = {
-  getTransaction: (transactionID: string) => Transaction | undefined;
-  getTransactionCategory: (transactionCategoryID: string) => Category | undefined;
-  getTransactionWallet: (transactionWalletID: string) => Wallet | undefined;
-  getTransactionCurrency: (walletCurrencyCode: string) => Currency | undefined;
-  getTransactionEvent: (transactionEventID: string) => Event | undefined;
-  getTransactionPeople: (transactionID: string) => Person[] | undefined;
-  getTransactionPlace: (transactionPlaceID: string) => Place | undefined;
-  getCompleteTransaction: (transactionID: string) => CompleteTransaction | undefined;
+  getTransaction: (transactionID: Transaction['id']) => Transaction | undefined;
+  getTransactionCategory: (transactionCategoryID: Transaction['category']) => Category | undefined;
+  getTransactionWallet: (transactionWalletID: Transaction['wallet']) => Wallet | undefined;
+  getTransactionCurrency: (walletCurrencyCode: Wallet['currency']) => Currency | undefined;
+  getTransactionEvent: (transactionEventID: Transaction['event']) => Event | undefined;
+  getTransactionPeople: (transactionID: Transaction['id']) => Person[] | undefined;
+  getTransactionPlace: (transactionPlaceID: Transaction['place']) => Place | undefined;
+  getCompleteTransaction: (transactionID: Transaction['id']) => CompleteTransaction | undefined;
 };
 
 const TransactionUtils = createContext<TransactionUtilsValue>({
@@ -44,42 +44,42 @@ const TransactionUtilsProvider = ({ children }: TransactionUtilsProviderProps) =
     people
   } = database;
 
-  const getTransaction = useCallback((transactionID: string) => {
+  const getTransaction = useCallback<TransactionUtilsValue['getTransaction']>((transactionID) => {
     if (!transactions) {
       return;
     }
     return transactions.find(transaction => transaction.id === transactionID);
   }, [transactions]);
 
-  const getTransactionCategory = useCallback((transactionCategoryID: string) => {
+  const getTransactionCategory = useCallback<TransactionUtilsValue['getTransactionCategory']>((transactionCategoryID) => {
     if (!categories) {
       return;
     }
     return categories.find(category => category.id === transactionCategoryID);
   }, [categories]);
 
-  const getTransactionWallet = useCallback((transactionWalletID: string) => {
+  const getTransactionWallet = useCallback<TransactionUtilsValue['getTransactionWallet']>((transactionWalletID) => {
     if (!wallets) {
       return;
     }
     return wallets.find(wallet => wallet.id === transactionWalletID);
   }, [wallets]);
 
-  const getTransactionCurrency = useCallback((walletCurrencyCode: string) => {
+  const getTransactionCurrency = useCallback<TransactionUtilsValue['getTransactionCurrency']>((walletCurrencyCode) => {
     if (!currencies) {
       return;
     }
     return currencies.find(currencies => currencies.iso === walletCurrencyCode);
   }, [currencies]);
 
-  const getTransactionEvent = useCallback((transactionEventID: string) => {
+  const getTransactionEvent = useCallback<TransactionUtilsValue['getTransactionEvent']>((transactionEventID) => {
     if (!events) {
       return;
     }
     return events.find(event => event.id === transactionEventID);
   }, [events]);
 
-  const getTransactionPeople = useCallback((transactionID: string) => {
+  const getTransactionPeople = useCallback<TransactionUtilsValue['getTransactionPeople']>((transactionID) => {
     if (!transaction_people || !people) {
       return;
     }
@@ -87,16 +87,16 @@ const TransactionUtilsProvider = ({ children }: TransactionUtilsProviderProps) =
     const personIDs = transactionPeople.map(transactionPerson => transactionPerson.person);
     const completePeople = personIDs.map(personID => people.find(person => person.id === personID)).filter(person => person !== undefined);
     return completePeople as Person[];
-  }, [transaction_people]);
+  }, [transaction_people, people]);
 
-  const getTransactionPlace = useCallback((transactionPlaceID: string) => {
+  const getTransactionPlace = useCallback<TransactionUtilsValue['getTransactionPlace']>((transactionPlaceID) => {
     if (!places) {
       return;
     }
     return places.find(place => place.id === transactionPlaceID);
   }, [places]);
 
-  const getCompleteTransaction = useCallback((transactionID: string) => {
+  const getCompleteTransaction = useCallback<TransactionUtilsValue['getCompleteTransaction']>((transactionID) => {
     const transaction = getTransaction(transactionID);
     if (!transaction) {
       return;
@@ -117,7 +117,15 @@ const TransactionUtilsProvider = ({ children }: TransactionUtilsProviderProps) =
       place,
       people
     };
-  }, [getTransaction, getTransactionCategory, getTransactionWallet, getTransactionCurrency, getTransactionEvent, getTransactionPlace, getTransactionPeople]);
+  }, [
+    getTransaction,
+    getTransactionCategory,
+    getTransactionWallet,
+    getTransactionCurrency,
+    getTransactionEvent,
+    getTransactionPlace,
+    getTransactionPeople
+  ]);
 
   const value = useMemo(() => ({
     getTransaction,
@@ -128,7 +136,16 @@ const TransactionUtilsProvider = ({ children }: TransactionUtilsProviderProps) =
     getTransactionPeople,
     getTransactionPlace,
     getCompleteTransaction
-  } as TransactionUtilsValue), [getTransaction, getTransactionCategory, getTransactionWallet, getTransactionCurrency, getTransactionEvent, getTransactionPeople, getTransactionPlace, getCompleteTransaction]);
+  }), [
+    getTransaction,
+    getTransactionCategory,
+    getTransactionWallet,
+    getTransactionCurrency,
+    getTransactionEvent,
+    getTransactionPeople,
+    getTransactionPlace,
+    getCompleteTransaction
+  ]);
 
   return (
     <TransactionUtils.Provider value={value}>
