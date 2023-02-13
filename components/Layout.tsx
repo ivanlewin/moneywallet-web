@@ -19,7 +19,7 @@ export default function Layout({ children }: LayoutProps) {
         display: 'flex',
       },
     }}>
-      <SearchAppBar hamburgerOnClick={() => setDrawerOpen(!drawerOpen)} />
+      <SearchAppBar onClickOnIcon={() => setDrawerOpen(!drawerOpen)} />
       <Hidden mdDown>
         <Drawer open variant='persistent'>
           <Sidebar />

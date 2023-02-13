@@ -1,11 +1,17 @@
-import { Avatar, Icon as MUIIcon } from "@mui/material";
+import { Avatar, Icon as MUIIcon, SxProps, Theme } from "@mui/material";
+import { CSSProperties } from "react";
 import type { Icon as IconType } from 'types/database';
 import { iconMapping } from "./icon-mapping";
 
-export default function Icon(props: IconType) {
+export type IconProps = IconType & {
+  onClick?: () => any;
+  sx?: SxProps<Theme>;
+  style?: CSSProperties;
+};
+export default function Icon({ ...props }: IconProps) {
   if (props.type === 'color') {
     return (
-      <Avatar sx={{ bgcolor: props.color }}>{props.name}</Avatar>
+      <Avatar sx={{ bgcolor: props.color }} {...props}>{props.name}</Avatar>
     );
   } else {
     const icon = iconMapping[props.resource];
@@ -27,13 +33,14 @@ export default function Icon(props: IconType) {
             overflow: 'hidden',
             userSelect: 'none',
           }}
+          {...props}
         >
           {icon}
         </MUIIcon>
       );
     } else {
       return (
-        <Avatar>{props.resource}</Avatar>
+        <Avatar {...props}>{props.resource}</Avatar>
       );
     }
   }

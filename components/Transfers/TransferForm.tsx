@@ -5,8 +5,8 @@ import {
   Checkbox, FormControlLabel, Grid, Paper, TextField, Typography, useTheme
 } from '@mui/material';
 import { CategoryIcon, DateIcon, DescriptionIcon, EventIcon, NoteIcon, PeopleIcon, PlaceIcon, WalletIcon } from 'components/Icons';
+import { Category, Currency, Event, Place, Transaction, Person, Wallet } from 'types/database';
 import { ReactNode } from 'react';
-import { Category, Currency, Event, Person, Place, Transaction, Wallet } from 'types/database';
 
 type TransactionFormProps = {
   page: 'detail' | 'edit';

@@ -1,42 +1,29 @@
 import CurrencyDisplay from 'components/Currencies/CurrencyDisplay';
-import Icon from 'components/Icons/Icon';
-import { useDatabase } from 'contexts/DatabaseContext';
 import { useRouter } from 'next/router';
 import React from 'react';
-import { IconSchema } from 'schemas';
 import { Transaction } from 'types/database';
 import { formatTime } from 'utils/formatting';
 
-import { ListItem, ListItemAvatar, ListItemProps, ListItemText, Typography } from '@mui/material';
+import { ListItem, ListItemAvatar, ListItemProps, ListItemText } from '@mui/material';
 
-import type { Icon as IconType } from 'types/database';
+import { useTransactionUtils } from 'contexts/TransactionUtils';
+import IconDisplay from 'components/Icons/IconDisplay';
 type TransactionListItemProps = ListItemProps & {
   transaction: Transaction;
 };
 export default function TransactionListItem({ transaction, ...props }: TransactionListItemProps) {
-  const { database } = useDatabase();
   const router = useRouter();
-  const { categories, currencies, wallets } = database || {};
+  const { getCompleteTransaction } = useTransactionUtils();
+  const completeTransaction = getCompleteTransaction(transaction.id);
 
-  const transactionCategory = categories?.find(category => category.id === transaction.category);
-  const transactionWallet = wallets?.find(wallet => wallet.id === transaction.wallet);
-  const transactionCurrency = currencies?.find(currencies => currencies.iso === transactionWallet?.currency);
+  const transactionCategory = completeTransaction?.category;
+  const transactionCurrency = completeTransaction?.currency;
 
   const goToDetail = () => {
     router.push('/transactions/[transactionID]', `/transactions/${transaction.id}`);
   };
 
-  const transactionIcon = React.useMemo(() => {
-    const fallback = { type: 'color', name: 'Transaction', color: '#2196F3' } as IconType;
-    if (!transactionCategory) {
-      return fallback;
-    }
-    const object = JSON.parse(transactionCategory.icon);
-    const icon = IconSchema.safeParse(object);
-    return icon.success === true ? icon.data : fallback;
-  }, [transactionCategory]);
-
-  if (!transactionCurrency) {
+  if (!completeTransaction || !transactionCurrency) {
     return null;
   }
 
@@ -45,27 +32,26 @@ export default function TransactionListItem({ transaction, ...props }: Transacti
       {...props}
       onClick={goToDetail}
       sx={{ ...props.sx, cursor: 'pointer' }}
-      title='Show transaction detail'
+      title='Open the transaction detail'
     >
       <ListItemAvatar >
-        <Icon {...transactionIcon} />
+        <IconDisplay icon={transactionCategory?.icon} />
       </ListItemAvatar>
       <ListItemText
         sx={{
           display: 'flex',
           flexDirection: 'column',
-          // maxWidth: 200,
-          '& > .MuiListItemText-secondary': {
+          '& > .MuiListItemText-primary, & > .MuiListItemText-secondary': {
             textOverflow: 'ellipsis',
             overflow: 'hidden',
             whiteSpace: 'nowrap',
           }
         }}
         primary={transactionCategory?.name}
+        primaryTypographyProps={{ title: transactionCategory?.name }}
         secondary={transaction.description}
+        secondaryTypographyProps={{ title: transaction.description }}
       />
-      {/* <Typography>{transactionCategory?.name}</Typography>
-      <Typography variant='body2'>{transaction.description}</Typography> */}
       <ListItemText
         sx={{
           display: 'flex',
@@ -81,6 +67,7 @@ export default function TransactionListItem({ transaction, ...props }: Transacti
           />
         }
         secondary={formatTime(transaction.date)}
+        secondaryTypographyProps={{ title: transaction.date }}
       />
     </ListItem>
   );

@@ -1,39 +1,37 @@
 import { useDatabase } from 'contexts/DatabaseContext';
 import React from 'react';
-import { Transaction } from 'types/database';
-import { calculateBalance } from 'utils';
+import { Transfer } from 'types/database';
 import { formatDate } from 'utils/formatting';
 
 import { List, ListSubheader } from '@mui/material';
 
-import TransactionListItem from './TransactionListItem';
-import CurrencyDisplay from 'components/Currencies/CurrencyDisplay';
+import TransferListItem from './TransferListItem';
 
-type transactionsByDate = {
-  [date: string]: Transaction[];
+type transfersByDate = {
+  [date: string]: Transfer[];
 };
 
-export default function TransactionList() {
+export default function TransferList() {
   const { database } = useDatabase();
-  const { transactions } = database;
-  const transactions_ = transactions?.sort((a, b) => a.date.localeCompare(b.date)).slice(-300); // TODO: replace Array.slice() with more robust solution
+  const { transfers } = database;
+  const transfers_ = transfers?.sort((a, b) => a.date.localeCompare(b.date)).slice(-300); // TODO: replace Array.slice() with more robust solution
 
-  const transactionsByDate = React.useMemo<transactionsByDate>(() => {
-    if (!transactions_) {
+  const transfersByDate = React.useMemo<transfersByDate>(() => {
+    if (!transfers_) {
       return {};
     }
-    const dates = transactions_
-      .map(transaction => transaction.date.split(' ')[0]) // only date, no time
+    const dates = transfers_
+      .map(transfer => transfer.date.split(' ')[0]) // only date, no time
       .sort((a, b) => b.localeCompare(a)) // sort from most recent to oldest
       .filter((v, i, a) => a.indexOf(v) === i);
 
     return dates.reduce((acc, date) => ({
       ...acc,
-      [date]: transactions_
-        .filter(transaction => transaction.date.split(' ')[0] === date)
+      [date]: transfers_
+        .filter(transfer => transfer.date.split(' ')[0] === date)
         .sort((a, b) => b.date.localeCompare(a.date))  // sort from most recent to oldest
     }), {});
-  }, [transactions_]);
+  }, [transfers_]);
 
   return (
     <List
@@ -51,7 +49,7 @@ export default function TransactionList() {
       }}
       subheader={<li />}
     >
-      {Object.entries(transactionsByDate).map(([date, transactionsOfTheDay]) => (
+      {Object.entries(transfersByDate).map(([date, transfersOfTheDay]) => (
         <li key={date}>
           <ul>
             <ListSubheader
@@ -63,12 +61,11 @@ export default function TransactionList() {
               }}
             >
               {formatDate(date)}
-              <CurrencyDisplay amount={calculateBalance(transactionsOfTheDay)} />
             </ListSubheader>
-            {transactionsOfTheDay.map(transaction => (
-              <TransactionListItem
-                key={transaction.id}
-                transaction={transaction}
+            {transfersOfTheDay.map(transfer => (
+              <TransferListItem
+                key={transfer.id}
+                transfer={transfer}
               />
             ))}
           </ul>
