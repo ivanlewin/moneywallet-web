@@ -1,7 +1,8 @@
-import * as React from 'react';
-import TransactionList from 'components/Transactions/TransactionList';
 import { Box, Tab, Tabs } from '@mui/material';
 import Layout from 'components/Layout';
+import TransactionList from 'components/Transactions/TransactionList';
+import TransferList from 'components/Transfers/TransferList';
+import * as React from 'react';
 
 type TabPanelProps = React.HTMLAttributes<HTMLDivElement> & {
   index: number;
@@ -45,7 +46,7 @@ export default function Home() {
           <TransactionList />
         </TabPanel>
         <TabPanel value={tab} index={1}>
-          {/* <TransactionList /> */}
+          <TransferList />
         </TabPanel>
       </Box>
     </Layout>

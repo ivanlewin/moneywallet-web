@@ -1,16 +1,12 @@
 import BackButton from 'components/common/BackButton';
 import CurrencyDisplay from 'components/Currencies/CurrencyDisplay';
-import { useRouter } from 'next/router';
 
-import DeleteIcon from '@mui/icons-material/Delete';
-import EditIcon from '@mui/icons-material/Edit';
-import SaveIcon from '@mui/icons-material/Save';
 import {
-  Checkbox, FormControlLabel, Grid, IconButton, Paper, TextField, Typography, useTheme
+  Checkbox, FormControlLabel, Grid, Paper, TextField, Typography, useTheme
 } from '@mui/material';
 import { CategoryIcon, DateIcon, DescriptionIcon, EventIcon, NoteIcon, PeopleIcon, PlaceIcon, WalletIcon } from 'components/Icons';
-import Link from 'next/link';
-import { Category, Currency, Event, Place, Transaction, Person, Wallet } from 'types/database';
+import { ReactNode } from 'react';
+import { Category, Currency, Event, Person, Place, Transaction, Wallet } from 'types/database';
 
 type TransactionFormProps = {
   page: 'detail' | 'edit';
@@ -21,6 +17,7 @@ type TransactionFormProps = {
   transactionEvent?: Event;
   transactionPeople?: Person[];
   transactionPlace?: Place;
+  actions?: ReactNode;
 };
 
 export default function TransactionForm({
@@ -31,40 +28,10 @@ export default function TransactionForm({
   transactionWallet,
   transactionEvent,
   transactionPeople,
-  transactionPlace
+  transactionPlace,
+  actions
 }: TransactionFormProps) {
   const theme = useTheme();
-
-  const actions = page === 'detail' ? (
-    <>
-      <Link
-        href='/transactions/[transactionID]/edit'
-        as={`/transactions/${transaction.id}/edit`}
-        title='Edit'
-        style={{ marginLeft: 'auto' }}
-      >
-        <IconButton title='Edit' >
-          <EditIcon htmlColor='white' />
-        </IconButton>
-      </Link>
-      <IconButton title='Delete' >
-        <DeleteIcon htmlColor='white' />
-      </IconButton>
-    </>
-  ) : (
-    <>
-      <Link
-        href='/transactions/[transactionID]'
-        as={`/transactions/${transaction.id}`}
-        title='Save'
-        style={{ marginLeft: 'auto' }}
-      >
-        <IconButton title='Save' >
-          <SaveIcon htmlColor='white' />
-        </IconButton>
-      </Link>
-    </>
-  );
 
   return (
     <Paper sx={{ minHeight: '100vh' }}>
