@@ -2,7 +2,7 @@ import Icon, { IconProps } from 'components/Icons/Icon';
 import React from 'react';
 import { IconSchema } from 'schemas';
 
-import { FALLBACK_ICON } from 'fixtures/wallets';
+import { FALLBACK_ICON } from 'fixtures';
 
 type IconDisplayProps = Partial<IconProps> & {
   icon?: string;

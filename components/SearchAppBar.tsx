@@ -54,9 +54,9 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
 }));
 
 type SearchAppBarProps = {
-  hamburgerOnClick: IconButtonProps['onClick'];
+  onClickOnIcon: IconButtonProps['onClick'];
 };
-export default function SearchAppBar({ hamburgerOnClick }: SearchAppBarProps) {
+export default function SearchAppBar({ onClickOnIcon }: SearchAppBarProps) {
   return (
     <Box sx={{ flexGrow: 1 }}>
       <AppBar position="static">
@@ -67,7 +67,7 @@ export default function SearchAppBar({ hamburgerOnClick }: SearchAppBarProps) {
             color="inherit"
             aria-label="open drawer"
             sx={{ mr: 2 }}
-            onClick={hamburgerOnClick}
+            onClick={onClickOnIcon}
           >
             <MenuIcon />
           </IconButton>
