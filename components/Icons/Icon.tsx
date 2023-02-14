@@ -1,4 +1,4 @@
-import { Avatar, Icon as MUIIcon, SxProps, Theme } from "@mui/material";
+import { Avatar, Icon as MUIIcon, SxProps, Theme, useTheme } from "@mui/material";
 import { CSSProperties } from "react";
 import type { Icon as IconType } from 'types/database';
 import { iconMapping } from "./icon-mapping";
@@ -9,9 +9,10 @@ export type IconProps = IconType & {
   style?: CSSProperties;
 };
 export default function Icon({ ...props }: IconProps) {
+  const theme = useTheme();
   if (props.type === 'color') {
     return (
-      <Avatar sx={{ bgcolor: props.color }} {...props}>{props.name}</Avatar>
+      <Avatar sx={{ bgcolor: props.color, color: theme.palette.getContrastText(props.color) }} {...props}>{props.name}</Avatar>
     );
   } else {
     const icon = iconMapping[props.resource];
@@ -19,8 +20,8 @@ export default function Icon({ ...props }: IconProps) {
       return (
         <MUIIcon
           sx={{
-            bgcolor: '#2196F3',
-            color: '#FFF',
+            bgcolor: theme.palette.primary.main,
+            color: theme.palette.common.white,
             height: 40,
             width: 40,
             p: '0.3em',

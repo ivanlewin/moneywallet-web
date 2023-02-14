@@ -25,7 +25,7 @@ export function calculateBalance(transactions: Transaction[], wallet?: Wallet) {
     .reduce((acc, { money, direction }) => (
       acc + signAmount(money, direction)
     ), 0)
-    + (wallet?.start_money || 0);
+    + (wallet?.start_money ?? 0);
 }
 
 export function calculateBalancesForTheDay(transactions: Transaction[]) {

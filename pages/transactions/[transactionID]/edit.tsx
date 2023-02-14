@@ -2,12 +2,13 @@ import { NextPage } from 'next';
 import { useRouter } from 'next/router';
 
 import SaveIcon from '@mui/icons-material/Save';
-import { IconButton } from '@mui/material';
+import { IconButton, useTheme } from '@mui/material';
 import TransactionForm from 'components/Transactions/TransactionForm';
 import { useTransactionUtils } from 'contexts/TransactionUtils';
 import Link from 'next/link';
 
 const TransactionDetail: NextPage = () => {
+  const theme = useTheme();
   const router = useRouter();
   const transactionID = router.query.transactionID as string;
 
@@ -25,7 +26,7 @@ const TransactionDetail: NextPage = () => {
       style={{ marginLeft: 'auto' }}
     >
       <IconButton title='Save' >
-        <SaveIcon htmlColor='white' />
+        <SaveIcon htmlColor={theme.palette.common.white} />
       </IconButton>
     </Link>
   );

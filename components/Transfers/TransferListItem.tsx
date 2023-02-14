@@ -3,7 +3,7 @@ import React from 'react';
 import { Transfer } from 'types/database';
 import { formatTime } from 'utils/formatting';
 
-import { ListItem, ListItemAvatar, ListItemProps, ListItemText } from '@mui/material';
+import { ListItem, ListItemAvatar, ListItemProps, ListItemText, useTheme } from '@mui/material';
 
 import CurrencyDisplay from 'components/Currencies/CurrencyDisplay';
 import IconDisplay from 'components/Icons/IconDisplay';
@@ -14,6 +14,7 @@ type TransferListItemProps = ListItemProps & {
 };
 export default function TransferListItem({ transfer, ...props }: TransferListItemProps) {
   const router = useRouter();
+  const theme = useTheme();
   const { getCompleteTransfer } = useTransferUtils();
   const { getCompleteTransaction } = useTransactionUtils();
 
@@ -43,7 +44,8 @@ export default function TransferListItem({ transfer, ...props }: TransferListIte
           style={{
             position: 'relative',
             top: 0,
-            left: -4
+            left: -4,
+            backgroundColor: theme.palette.primary.dark
           }}
         />
         <IconDisplay icon={completeToTransaction.wallet?.icon}
@@ -79,7 +81,7 @@ export default function TransferListItem({ transfer, ...props }: TransferListIte
         primary={
           <CurrencyDisplay
             amount={completeFromTransaction.money}
-            color='black'
+            color={theme.palette.text.primary}
             currency={completeFromTransaction?.currency}
           />
         }

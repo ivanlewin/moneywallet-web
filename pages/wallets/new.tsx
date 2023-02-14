@@ -7,10 +7,11 @@ import { useRouter } from 'next/router';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import {
-  Card, CardContent, Checkbox, FormControlLabel, Grid, IconButton, Paper, Typography
+  Card, CardContent, Checkbox, FormControlLabel, Grid, IconButton, Paper, Typography, useTheme
 } from '@mui/material';
 
 const NewWallet: NextPage = () => {
+  const theme = useTheme();
   const router = useRouter();
   const { database } = useDatabase();
   const { categories, wallets, currencies } = database;
@@ -31,7 +32,7 @@ const NewWallet: NextPage = () => {
   return (
     <Card>
       <CardContent sx={{ p: 0 }}>
-        <Grid container sx={{ background: '#2196F3' }}>
+        <Grid container sx={{ background: theme.palette.primary.main }}>
           <Grid container sx={{
             alignItems: 'center',
           }}>

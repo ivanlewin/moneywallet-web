@@ -1,4 +1,5 @@
 import DatabaseProvider from 'contexts/DatabaseContext';
+import ThemeProvider from 'contexts/Theme';
 import TransactionUtilsProvider from 'contexts/TransactionUtils';
 import TransferUtilsProvider from 'contexts/TransferUtils';
 import { AppProps } from 'next/app';
@@ -19,13 +20,15 @@ export default function MyApp({ Component, pageProps }: AppProps) {
         <link rel="apple-touch-icon" href="/apple-icon.png"></link>
         <meta name="theme-color" content="#1E87DB" />
       </Head>
-      <DatabaseProvider>
-        <TransactionUtilsProvider>
-          <TransferUtilsProvider>
-            <Component {...pageProps} />
-          </TransferUtilsProvider>
-        </TransactionUtilsProvider>
-      </DatabaseProvider>
+      <ThemeProvider>
+        <DatabaseProvider>
+          <TransactionUtilsProvider>
+            <TransferUtilsProvider>
+              <Component {...pageProps} />
+            </TransferUtilsProvider>
+          </TransactionUtilsProvider>
+        </DatabaseProvider>
+      </ThemeProvider>
     </>
   );
 }
