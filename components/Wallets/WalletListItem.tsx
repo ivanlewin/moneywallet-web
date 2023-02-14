@@ -14,7 +14,7 @@ type WalletListItemProps = ListItemProps & {
 };
 export default function WalletListItem({ selected, wallet, ...props }: WalletListItemProps) {
   const { database } = useDatabase();
-  const { transactions, currencies } = database || {};
+  const { transactions, currencies } = database ?? {};
   const { currency, name } = wallet;
   const walletCurrency = currencies?.find(c => c.iso === currency);
 

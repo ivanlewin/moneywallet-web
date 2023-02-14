@@ -3,7 +3,7 @@ import { useRouter } from 'next/router';
 
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
-import { IconButton } from '@mui/material';
+import { IconButton, useTheme } from '@mui/material';
 import TransactionForm from 'components/Transactions/TransactionForm';
 import { useTransactionUtils } from 'contexts/TransactionUtils';
 import Link from 'next/link';
@@ -12,6 +12,7 @@ import React from 'react';
 import { TransferIcon } from 'components/Icons';
 
 const TransactionDetail: NextPage = () => {
+  const theme = useTheme();
   const router = useRouter();
   const transactionID = router.query.transactionID as string;
 
@@ -39,7 +40,7 @@ const TransactionDetail: NextPage = () => {
           style={{ marginLeft: 'auto' }}
         >
           <IconButton title='Open the transfer detail' >
-            <TransferIcon htmlColor='white' />
+            <TransferIcon htmlColor={theme.palette.common.white} />
           </IconButton>
         </Link>
       ) : null}
@@ -50,11 +51,11 @@ const TransactionDetail: NextPage = () => {
         style={{ marginLeft: transfer ? undefined : 'auto' }}
       >
         <IconButton title='Edit' >
-          <EditIcon htmlColor='white' />
+          <EditIcon htmlColor={theme.palette.common.white} />
         </IconButton>
       </Link>
       <IconButton title='Delete' >
-        <DeleteIcon htmlColor='white' />
+        <DeleteIcon htmlColor={theme.palette.common.white} />
       </IconButton>
     </>
   );

@@ -40,13 +40,13 @@ export default function TransactionForm({
           container
           sx={{
             height: 120,
-            background: '#2196F3',
-            color: 'white',
+            backgroundColor: theme.palette.primary.main,
+            color: theme.palette.common.white,
           }}
         >
           <Grid container sx={{ alignItems: 'center', padding: 1 }}>
-            <BackButton title='Go back to transaction list' href='/' iconButtonProps={{ sx: { color: 'white' } }} />
-            <Typography variant='h6' sx={{ ml: 2, color: 'white' }}>Transaction</Typography>
+            <BackButton title='Go back to transaction list' href='/' iconButtonProps={{ sx: { color: theme.palette.common.white } }} />
+            <Typography variant='h6' sx={{ ml: 2, color: theme.palette.common.white }}>Transaction</Typography>
             {actions}
           </Grid>
           <Grid
@@ -59,7 +59,7 @@ export default function TransactionForm({
               amount={transaction.money}
               direction={transaction.direction}
               currency={transactionCurrency}
-              color='white'
+              color={theme.palette.common.white}
               fontSize={20}
               sx={{ ml: 2 }}
             />
