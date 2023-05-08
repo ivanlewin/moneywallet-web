@@ -1,5 +1,6 @@
 import * as React from 'react';
 import SidebarHeader, { SidebarHeaderProps } from './SidebarHeader';
+import SidebarMenu from './SidebarMenu';
 
 export default function Sidebar() {
   const [headerExpanded, setHeaderExpanded] = React.useState(true);
@@ -7,9 +8,12 @@ export default function Sidebar() {
     setHeaderExpanded(isExpanded);
   };
   return (
-    <SidebarHeader
-      expanded={headerExpanded}
-      onChange={handleHeaderChange}
-    />
+    <>
+      <SidebarHeader
+        expanded={headerExpanded}
+        onChange={handleHeaderChange}
+      />
+      <SidebarMenu />
+    </>
   );
 }
