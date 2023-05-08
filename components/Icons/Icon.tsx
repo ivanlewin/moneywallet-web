@@ -40,6 +40,7 @@ export default function Icon({ ...props }: IconProps) {
         </MUIIcon>
       );
     } else {
+      console.warn(`Icon '${props.resource}' is not mapped`)
       return (
         <Avatar {...props}>{props.resource}</Avatar>
       );
