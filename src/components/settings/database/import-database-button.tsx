@@ -34,6 +34,7 @@ export default function ImportDatabaseButton() {
   const handleInputChange: React.ComponentProps<'input'>['onChange'] = (event) => {
     if (event.target.files && event.target.files.length > 0) {
       processFile(event.target.files[0]);
+      event.target.value = '';
     }
   };
 
@@ -44,30 +45,27 @@ export default function ImportDatabaseButton() {
   };
 
   return (
-    <>
+    <Button
+      variant='outlined'
+      color='primary'
+      onClick={handleButtonClick}
+      sx={{
+        display: 'flex',
+        padding: theme.spacing(1, 2),
+        gap: 2,
+        textTransform: 'none',
+      }}
+    >
+      Import backup
+      <ExternalMemoryIcon />
+      <input type="file" hidden />
       <input
         type='file'
+        accept='.json'
         ref={inputRef}
         onChange={handleInputChange}
-        style={{
-          display: 'none',
-          visibility: 'hidden'
-        }}
+        hidden
       />
-      <Button
-        variant='outlined'
-        color='primary'
-        onClick={handleButtonClick}
-        sx={{
-          display: 'flex',
-          padding: theme.spacing(1, 2),
-          gap: 2,
-          textTransform: 'none',
-        }}
-      >
-        <ExternalMemoryIcon />
-        Import backup
-      </Button>
-    </>
+    </Button>
   );
 };
