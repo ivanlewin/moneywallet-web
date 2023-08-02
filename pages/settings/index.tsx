@@ -4,15 +4,14 @@ import { Grid, Paper, Typography } from '@mui/material';
 import { UserInterfaceIcon, UtilitiesIcon, DatabaseIcon, AboutIcon } from 'components/Icons';
 import Link, { LinkProps } from 'next/link';
 
-type SettingsMenuProps = {
+interface SettingsLinkProps extends LinkProps {
   title: string;
   subtitle: string;
   icon: React.ReactNode;
-  href: LinkProps['href'];
 };
-function SettingsMenu({ title, subtitle, icon, href }: SettingsMenuProps) {
+export function SettingsLink({ title, subtitle, icon, ...props }: SettingsLinkProps) {
   return (
-    <Link href={href}>
+    <Link {...props}>
       <Grid item xs={12} sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
         <Grid item>
           {icon}
@@ -31,25 +30,25 @@ export default function Settings() {
     <Layout>
       <Paper sx={{ minHeight: '100vh' }} >
         <Grid container flexDirection='column' sx={{ padding: 3, gap: 3 }}>
-          <SettingsMenu
+          <SettingsLink
             title='User interface'
             subtitle='Personalize it as you want'
             icon={<UserInterfaceIcon />}
             href='/settings/user-interface'
           />
-          <SettingsMenu
+          <SettingsLink
             title='Utilities'
             subtitle='Setup the available tools'
             icon={<UtilitiesIcon />}
             href='/settings/utilities'
           />
-          <SettingsMenu
+          <SettingsLink
             title='Database'
             subtitle='Manage your data'
             icon={<DatabaseIcon />}
             href='/settings/database'
           />
-          <SettingsMenu
+          <SettingsLink
             title='About'
             subtitle='Credits and licenses'
             icon={<AboutIcon />}

@@ -16,7 +16,7 @@ type transactionsByDate = {
 export default function TransactionList() {
   const { database } = useDatabase();
   const { transactions } = database;
-  const transactions_ = transactions?.sort((a, b) => a.date.localeCompare(b.date)).slice(-300); // TODO: replace Array.slice() with more robust solution
+  const transactions_ = transactions?.sort((a, b) => a.date.localeCompare(b.date)).filter(({ date }) => (date <= new Date().toISOString())).slice(-100); // TODO: replace Array.slice() with more robust solution
 
   const transactionsByDate = React.useMemo<transactionsByDate>(() => {
     if (!transactions_) {

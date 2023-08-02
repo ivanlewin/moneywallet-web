@@ -1,15 +1,15 @@
 // https://mui.com/material-ui/react-app-bar/#app-bar-with-search-field
 import * as React from 'react';
-import { styled, alpha } from '@mui/material/styles';
-import AppBar from '@mui/material/AppBar';
-import Box from '@mui/material/Box';
-import Toolbar from '@mui/material/Toolbar';
-import IconButton from '@mui/material/IconButton';
-import Typography from '@mui/material/Typography';
-import InputBase from '@mui/material/InputBase';
+
 import MenuIcon from '@mui/icons-material/Menu';
 import SearchIcon from '@mui/icons-material/Search';
-import { IconButtonProps } from '@mui/material';
+import AppBar from '@mui/material/AppBar';
+import Box from '@mui/material/Box';
+import Hidden from '@mui/material/Hidden';
+import IconButton, { IconButtonProps } from '@mui/material/IconButton';
+import InputBase from '@mui/material/InputBase';
+import { alpha, styled } from '@mui/material/styles';
+import Toolbar from '@mui/material/Toolbar';
 
 const Search = styled('div')(({ theme }) => ({
   position: 'relative',
@@ -61,31 +61,25 @@ export default function SearchAppBar({ onClickOnIcon }: SearchAppBarProps) {
     <Box sx={{ flexGrow: 1 }}>
       <AppBar position="static">
         <Toolbar>
-          <IconButton
-            size="large"
-            edge="start"
-            color="inherit"
-            aria-label="open drawer"
-            sx={{ mr: 2 }}
-            onClick={onClickOnIcon}
-          >
-            <MenuIcon />
-          </IconButton>
-          <Typography
-            variant="h6"
-            noWrap
-            component="div"
-            sx={{ flexGrow: 1, display: { xs: 'none', sm: 'block' } }}
-          >
-            MUI
-          </Typography>
+          <Hidden lgUp>
+            <IconButton
+              size="large"
+              edge="start"
+              color="inherit"
+              aria-label="open drawer"
+              sx={{ mr: 2 }}
+              onClick={onClickOnIcon}
+            >
+              <MenuIcon />
+            </IconButton>
+          </Hidden>
           <Search>
             <SearchIconWrapper>
               <SearchIcon />
             </SearchIconWrapper>
             <StyledInputBase
               placeholder="Search…"
-              inputProps={{ 'aria-label': 'search' }}
+              inputProps={{ 'aria-label': 'search', style: { width: '24ch' } }}
             />
           </Search>
         </Toolbar>

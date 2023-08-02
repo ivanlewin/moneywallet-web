@@ -27,7 +27,7 @@ import Link, { LinkProps } from 'next/link';
 interface SidebarMenuLinkProps extends LinkProps {
   buttonProps?: ButtonProps;
   disabled?: boolean;
-  icon: React.ReactElement;
+  icon: React.ReactNode;
   title: string;
 };
 function SidebarMenuLink({ disabled = false, icon, title, buttonProps, ...props }: SidebarMenuLinkProps) {

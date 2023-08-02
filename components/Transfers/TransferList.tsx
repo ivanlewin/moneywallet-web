@@ -14,7 +14,7 @@ type transfersByDate = {
 export default function TransferList() {
   const { database } = useDatabase();
   const { transfers } = database;
-  const transfers_ = transfers?.sort((a, b) => a.date.localeCompare(b.date)).slice(-300); // TODO: replace Array.slice() with more robust solution
+  const transfers_ = transfers?.sort((a, b) => a.date.localeCompare(b.date)).filter(({ date }) => (date <= new Date().toISOString())).slice(-100); // TODO: replace Array.slice() with more robust solution
 
   const transfersByDate = React.useMemo<transfersByDate>(() => {
     if (!transfers_) {
