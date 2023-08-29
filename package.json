@@ -22,7 +22,11 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "prismaGenerate": "npx prisma generate",
+    "prismaMigrate": "npx prisma migrate",
+    "prismaStudio": "npx prisma studio",
+    "prismaPush": "npx prisma db push"
   },
   "homepage": "https://github.com/ivanlewin/moneywallet-web",
   "dependencies": {

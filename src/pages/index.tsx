@@ -3,6 +3,8 @@ import Layout from 'components/Layout';
 import TransactionList from 'components/Transactions/TransactionList';
 import TransferList from 'components/Transfers/TransferList';
 import * as React from 'react';
+import prisma from '../../lib/prisma';
+import { GetServerSideProps } from 'next';
 
 type TabPanelProps = React.HTMLAttributes<HTMLDivElement> & {
   index: number;
@@ -52,3 +54,12 @@ export default function Home() {
     </Layout>
   );
 }
+
+export const getStaticProps: GetServerSideProps = async () => {
+  const feed = await prisma.user.findMany({
+  });
+  return {
+    props: { feed },
+    revalidate: 10,
+  };
+};

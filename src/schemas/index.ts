@@ -100,7 +100,7 @@ export const PlaceSchema = z.object({
   icon: z.string(), // Icon
   address: z.string().optional(),
   latitude: z.number().optional(),
-  longituude: z.number().optional(),
+  longitude: z.number().optional(),
   id: z.string().uuid(),
   last_edit: z.number(), // timestamp
   deleted: z.boolean(),

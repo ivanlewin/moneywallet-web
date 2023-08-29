@@ -1,0 +1,295 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("POSTGRES_PRISMA_URL") // uses connection pooling
+  directUrl = env("POSTGRES_URL_NON_POOLING") // uses a direct connection
+}
+
+model User {
+  id        String   @id @default(uuid())
+  name      String?
+  email     String?  @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Currency {
+  iso       String   @id @db.VarChar(3)
+  name      String
+  symbol    String   @unique @default("$")
+  decimals  Int      @default(2)
+  favourite Boolean
+  lastEdit  DateTime @updatedAt
+  deleted   Boolean  @default(false)
+  wallets   Wallet[]
+}
+
+enum IconSchemaType {
+  COLOR
+  RESOURCE
+}
+
+model Icon {
+  id       String         @id @default(uuid())
+  type     IconSchemaType
+  name     String?
+  color    String?
+  resource String?
+  Wallet   Wallet[]
+  Category Category[]
+  Event    Event[]
+  Place    Place[]
+  Person   Person[]
+  Debt     Debt[]
+}
+
+model Wallet {
+  id                    String                 @id @default(uuid())
+  name                  String
+  icon                  Icon                   @relation(fields: [iconId], references: [id])
+  iconId                String
+  currency              Currency               @relation(fields: [currencySymbol], references: [symbol])
+  currencySymbol        String
+  startMoney            Float?                 @default(0)
+  countInTotal          Boolean                @default(true)
+  archived              Boolean                @default(false)
+  index                 Int                    @default(0)
+  lastEdit              DateTime               @updatedAt
+  deleted               Boolean                @default(false)
+  debts                 Debt[]
+  transactions          Transaction[]
+  recurrentTransactions RecurrentTransaction[]
+  transactionModels     TransactionModel[]
+  transfersFrom         Transfer[]             @relation("TransactionFromWallet")
+  transfersTo           Transfer[]             @relation("TransactionToWallet")
+  transferModelsFrom    TransferModel[]        @relation("TransactionModelFromWallet")
+  transferModelsTo      TransferModel[]        @relation("TransactionModelToWallet")
+}
+
+enum CategoryType {
+  INCOME
+  EXPENSE
+  SYSTEM
+}
+
+enum CategoryTag {
+  SYSTEM_TRANSFER
+  SYSTEM_TRANSFER_TAX
+  SYSTEM_DEBT
+  SYSTEM_CREDIT
+  SYSTEM_PAID_DEBT
+  SYSTEM_PAID_CREDIT
+  SYSTEM_TAX
+  SYSTEM_DEPOSIT
+  SYSTEM_WITHDRAW
+  DEFAULT_SALE
+  DEFAULT_CAR_EXPENSES
+  DEFAULT_TECHNOLOGY
+  DEFAULT_HOBBY
+  DEFAULT_TIP
+  DEFAULT_SALARY
+  DEFAULT_TRAVEL
+}
+
+enum CategoryID {
+  SYSTEM_UUID_SYSTEM_TRANSFER
+  SYSTEM_UUID_SYSTEM_TRANSFER_TAX
+  SYSTEM_UUID_SYSTEM_DEBT
+  SYSTEM_UUID_SYSTEM_CREDIT
+  SYSTEM_UUID_SYSTEM_PAID_DEBT
+  SYSTEM_UUID_SYSTEM_PAID_CREDIT
+  SYSTEM_UUID_SYSTEM_TAX
+  SYSTEM_UUID_SYSTEM_DEPOSIT
+  SYSTEM_UUID_SYSTEM_WITHDRAw
+}
+
+model Category {
+  name          String
+  icon          Icon         @relation(fields: [iconId], references: [id])
+  iconId        String
+  type          CategoryType
+  parentId      String?
+  parent        Category?    @relation("ParentCategory", fields: [parentId], references: [id])
+  children      Category[]   @relation("ParentCategory")
+  tag           CategoryTag?
+  showInReports Boolean      @default(true)
+  index         Int          @default(0)
+  id            String       @id @default(uuid())
+  lastEdit      DateTime     @updatedAt
+  deleted       Boolean      @default(false)
+}
+
+model Event {
+  name        String
+  icon        Icon          @relation(fields: [iconId], references: [id])
+  iconId      String
+  note        String?
+  startDate   DateTime
+  endDate     DateTime
+  id          String        @id @default(uuid())
+  lastEdit    DateTime      @updatedAt
+  deleted     Boolean       @default(false)
+  Transaction Transaction[]
+}
+
+model Place {
+  name        String
+  icon        Icon          @relation(fields: [iconId], references: [id])
+  iconId      String
+  address     String?
+  latitude    String?
+  longitude   String?
+  id          String        @id @default(uuid())
+  lastEdit    DateTime      @updatedAt
+  deleted     Boolean       @default(false)
+  Transaction Transaction[]
+}
+
+model Person {
+  name         String
+  icon         Icon          @relation(fields: [iconId], references: [id])
+  iconId       String
+  note         String?
+  id           String        @id @default(uuid())
+  lastEdit     DateTime      @updatedAt
+  deleted      Boolean       @default(false)
+  transactions Transaction[]
+}
+
+enum DebtType {
+  DEBT
+  CREDIT
+}
+
+model Debt {
+  type        DebtType
+  icon        Icon          @relation(fields: [iconId], references: [id])
+  iconId      String
+  description String?
+  date        DateTime
+  wallet      Wallet        @relation(fields: [walletId], references: [id])
+  walletId    String
+  note        String
+  money       Float
+  archived    Boolean       @default(false)
+  id          String        @id @default(uuid())
+  lastEdit    DateTime      @updatedAt
+  deleted     Boolean       @default(false)
+  Transaction Transaction[]
+}
+
+enum TransactionCategory {
+  SYSTEM_UUID_SYSTEM_DEBT
+  SYSTEM_UUID_SYSTEM_PAID_DEBT
+  SYSTEM_UUID_SYSTEM_TRANSFER
+  SYSTEM_UUID_SYSTEM_TRANSFER_TAX
+}
+
+enum TransactionDirection {
+  EXPENSE
+  INCOME
+}
+
+enum TransactionType {
+  TRANSACTION
+  TRANSFER
+  DEBT
+  UNKNOWN
+  MODEL
+}
+
+model Transaction {
+  money                  Float
+  date                   DateTime
+  description            String
+  category               String
+  direction              TransactionDirection
+  type                   TransactionType
+  wallet                 Wallet                @relation(fields: [walletId], references: [id])
+  walletId               String
+  place                  Place?                @relation(fields: [placeId], references: [id])
+  placeId                String?
+  note                   String?
+  event                  Event?                @relation(fields: [eventId], references: [id])
+  eventId                String?
+  confirmed              Boolean               @default(true)
+  countInTotal           Boolean               @default(true)
+  id                     String                @id @default(uuid())
+  lastEdit               DateTime              @updatedAt
+  deleted                Boolean               @default(false)
+  debt                   Debt?                 @relation(fields: [debtId], references: [id])
+  debtId                 String?
+  recurrence             RecurrentTransaction? @relation(fields: [recurrentTransactionId], references: [id])
+  recurrentTransactionId String?
+  people                 Person[]
+}
+
+model RecurrentTransaction {
+  money         Float
+  description   String
+  category      String
+  direction     TransactionDirection
+  wallet        Wallet               @relation(fields: [walletId], references: [id])
+  walletId      String
+  note          String?
+  confirmed     Boolean              @default(true)
+  countInTotal  Boolean              @default(true)
+  startDate     DateTime
+  lastOcurrence DateTime
+  nextOcurrence DateTime
+  rule          String
+  id            String               @id @default(uuid())
+  transactions  Transaction[]
+  lastEdit      DateTime             @updatedAt
+  deleted       Boolean              @default(false)
+}
+
+model TransactionModel {
+  money        Float
+  description  String
+  category     String
+  direction    TransactionDirection
+  wallet       Wallet               @relation(fields: [walletId], references: [id])
+  walletId     String
+  note         String?
+  confirmed    Boolean              @default(true)
+  countInTotal Boolean              @default(true)
+  id           String               @id @default(uuid())
+  lastEdit     DateTime             @updatedAt
+  deleted      Boolean              @default(false)
+}
+
+model Transfer {
+  description  String
+  date         DateTime
+  from         Wallet   @relation("TransactionFromWallet", fields: [fromId], references: [id])
+  fromId       String
+  to           Wallet   @relation("TransactionToWallet", fields: [toId], references: [id])
+  toId         String
+  note         String
+  confirmed    Boolean  @default(true)
+  countInTotal Boolean  @default(true)
+  id           String   @id @default(uuid())
+  lastEdit     DateTime @updatedAt
+  deleted      Boolean  @default(false)
+}
+
+model TransferModel {
+  description  String
+  note         String
+  confirmed    Boolean  @default(true)
+  countInTotal Boolean  @default(true)
+  from         Wallet   @relation("TransactionModelFromWallet", fields: [fromId], references: [id])
+  fromId       String
+  to           Wallet   @relation("TransactionModelToWallet", fields: [toId], references: [id])
+  toId         String
+  fromMoney    Float
+  toMoney      Float
+  taxMoney     Float    @default(0)
+  id           String   @id @default(uuid())
+  lastEdit     DateTime @updatedAt
+  deleted      Boolean  @default(false)
+}
