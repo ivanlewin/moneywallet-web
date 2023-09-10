@@ -25,6 +25,11 @@ export default function ImportDatabaseButton() {
     try {
       const data = await parseJSON(file);
       const database = DatabaseSchema.parse(data);
+      fetch('/api/database/import', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(database)
+      });
       window.localStorage.setItem('database', JSON.stringify(database));
     } catch (error) {
       console.error(error);

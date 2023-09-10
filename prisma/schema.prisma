@@ -9,17 +9,23 @@ datasource db {
 }
 
 model User {
-  id        String   @id @default(uuid())
-  name      String?
-  email     String?  @unique
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id         String     @id @default(uuid())
+  name       String?
+  email      String?    @unique
+  createdAt  DateTime   @default(now())
+  updatedAt  DateTime   @updatedAt
+  wallets    Wallet[]
+  categories Category[]
+  events     Event[]
+  places     Place[]
+  people     Person[]
+  debts      Debt[]
 }
 
 model Currency {
   iso       String   @id @db.VarChar(3)
   name      String
-  symbol    String   @unique @default("$")
+  symbol    String?
   decimals  Int      @default(2)
   favourite Boolean
   lastEdit  DateTime @updatedAt
@@ -27,32 +33,14 @@ model Currency {
   wallets   Wallet[]
 }
 
-enum IconSchemaType {
-  COLOR
-  RESOURCE
-}
-
-model Icon {
-  id       String         @id @default(uuid())
-  type     IconSchemaType
-  name     String?
-  color    String?
-  resource String?
-  Wallet   Wallet[]
-  Category Category[]
-  Event    Event[]
-  Place    Place[]
-  Person   Person[]
-  Debt     Debt[]
-}
-
 model Wallet {
   id                    String                 @id @default(uuid())
   name                  String
-  icon                  Icon                   @relation(fields: [iconId], references: [id])
-  iconId                String
-  currency              Currency               @relation(fields: [currencySymbol], references: [symbol])
-  currencySymbol        String
+  iconResource          String?
+  iconColor             String?
+  iconName              String?
+  currency              Currency               @relation(fields: [currencyIso], references: [iso])
+  currencyIso           String
   startMoney            Float?                 @default(0)
   countInTotal          Boolean                @default(true)
   archived              Boolean                @default(false)
@@ -63,10 +51,12 @@ model Wallet {
   transactions          Transaction[]
   recurrentTransactions RecurrentTransaction[]
   transactionModels     TransactionModel[]
-  transfersFrom         Transfer[]             @relation("TransactionFromWallet")
-  transfersTo           Transfer[]             @relation("TransactionToWallet")
   transferModelsFrom    TransferModel[]        @relation("TransactionModelFromWallet")
   transferModelsTo      TransferModel[]        @relation("TransactionModelToWallet")
+  user                  User                   @relation(fields: [userID], references: [id])
+  userID                String
+
+  @@index([userID])
 }
 
 enum CategoryType {
@@ -103,60 +93,81 @@ enum CategoryID {
   SYSTEM_UUID_SYSTEM_PAID_CREDIT
   SYSTEM_UUID_SYSTEM_TAX
   SYSTEM_UUID_SYSTEM_DEPOSIT
-  SYSTEM_UUID_SYSTEM_WITHDRAw
+  SYSTEM_UUID_SYSTEM_WITHDRAW
 }
 
 model Category {
   name          String
-  icon          Icon         @relation(fields: [iconId], references: [id])
-  iconId        String
+  iconResource  String?
+  iconColor     String?
+  iconName      String?
   type          CategoryType
-  parentId      String?
-  parent        Category?    @relation("ParentCategory", fields: [parentId], references: [id])
+  parentID      String?
+  parent        Category?    @relation("ParentCategory", fields: [parentID], references: [id])
   children      Category[]   @relation("ParentCategory")
   tag           CategoryTag?
+  mwCategoryID  CategoryID?
   showInReports Boolean      @default(true)
   index         Int          @default(0)
   id            String       @id @default(uuid())
   lastEdit      DateTime     @updatedAt
   deleted       Boolean      @default(false)
+  user          User         @relation(fields: [userID], references: [id])
+  userID        String
+
+  @@index([userID])
 }
 
 model Event {
-  name        String
-  icon        Icon          @relation(fields: [iconId], references: [id])
-  iconId      String
-  note        String?
-  startDate   DateTime
-  endDate     DateTime
-  id          String        @id @default(uuid())
-  lastEdit    DateTime      @updatedAt
-  deleted     Boolean       @default(false)
-  Transaction Transaction[]
+  name         String
+  iconResource String?
+  iconColor    String?
+  iconName     String?
+  note         String?
+  startDate    DateTime
+  endDate      DateTime
+  id           String        @id @default(uuid())
+  lastEdit     DateTime      @updatedAt
+  deleted      Boolean       @default(false)
+  transactions Transaction[]
+  user         User          @relation(fields: [userID], references: [id])
+  userID       String
+
+  @@index([userID])
 }
 
 model Place {
-  name        String
-  icon        Icon          @relation(fields: [iconId], references: [id])
-  iconId      String
-  address     String?
-  latitude    String?
-  longitude   String?
-  id          String        @id @default(uuid())
-  lastEdit    DateTime      @updatedAt
-  deleted     Boolean       @default(false)
-  Transaction Transaction[]
+  name         String
+  iconResource String?
+  iconColor    String?
+  iconName     String?
+  address      String?
+  latitude     String?
+  longitude    String?
+  id           String        @id @default(uuid())
+  lastEdit     DateTime      @updatedAt
+  deleted      Boolean       @default(false)
+  transactions Transaction[]
+  user         User          @relation(fields: [userID], references: [id])
+  userID       String
+
+  @@index([userID])
 }
 
 model Person {
   name         String
-  icon         Icon          @relation(fields: [iconId], references: [id])
-  iconId       String
+  iconResource String?
+  iconColor    String?
+  iconName     String?
   note         String?
   id           String        @id @default(uuid())
   lastEdit     DateTime      @updatedAt
   deleted      Boolean       @default(false)
   transactions Transaction[]
+  user         User          @relation(fields: [userID], references: [id])
+  userID       String
+
+  @@index([userID])
 }
 
 enum DebtType {
@@ -165,20 +176,25 @@ enum DebtType {
 }
 
 model Debt {
-  type        DebtType
-  icon        Icon          @relation(fields: [iconId], references: [id])
-  iconId      String
-  description String?
-  date        DateTime
-  wallet      Wallet        @relation(fields: [walletId], references: [id])
-  walletId    String
-  note        String
-  money       Float
-  archived    Boolean       @default(false)
-  id          String        @id @default(uuid())
-  lastEdit    DateTime      @updatedAt
-  deleted     Boolean       @default(false)
-  Transaction Transaction[]
+  type         DebtType
+  iconResource String?
+  iconColor    String?
+  iconName     String?
+  description  String?
+  date         DateTime
+  wallet       Wallet        @relation(fields: [walletID], references: [id])
+  walletID     String
+  note         String
+  money        Float
+  archived     Boolean       @default(false)
+  id           String        @id @default(uuid())
+  lastEdit     DateTime      @updatedAt
+  deleted      Boolean       @default(false)
+  transaction  Transaction[]
+  user         User          @relation(fields: [userID], references: [id])
+  userID       String
+
+  @@index([userID])
 }
 
 enum TransactionCategory {
@@ -205,76 +221,86 @@ model Transaction {
   money                  Float
   date                   DateTime
   description            String
-  category               String
+  category               String // TODO: Change to Category and there should be default system categories
   direction              TransactionDirection
   type                   TransactionType
-  wallet                 Wallet                @relation(fields: [walletId], references: [id])
-  walletId               String
-  place                  Place?                @relation(fields: [placeId], references: [id])
-  placeId                String?
+  wallet                 Wallet                @relation(fields: [walletID], references: [id])
+  walletID               String
+  place                  Place?                @relation(fields: [placeID], references: [id])
+  placeID                String?
   note                   String?
-  event                  Event?                @relation(fields: [eventId], references: [id])
-  eventId                String?
+  event                  Event?                @relation(fields: [eventID], references: [id])
+  eventID                String?
   confirmed              Boolean               @default(true)
   countInTotal           Boolean               @default(true)
   id                     String                @id @default(uuid())
   lastEdit               DateTime              @updatedAt
   deleted                Boolean               @default(false)
-  debt                   Debt?                 @relation(fields: [debtId], references: [id])
-  debtId                 String?
-  recurrence             RecurrentTransaction? @relation(fields: [recurrentTransactionId], references: [id])
-  recurrentTransactionId String?
+  debt                   Debt?                 @relation(fields: [debtID], references: [id])
+  debtID                 String?
+  recurrence             RecurrentTransaction? @relation(fields: [recurrentTransactionID], references: [id])
+  recurrentTransactionID String?
   people                 Person[]
+  transferFrom           Transfer?             @relation("TransferFromTransaction")
+  transferTo             Transfer?             @relation("TransferToTransaction")
+
+  @@index([walletID, date])
 }
 
 model RecurrentTransaction {
-  money         Float
-  description   String
-  category      String
-  direction     TransactionDirection
-  wallet        Wallet               @relation(fields: [walletId], references: [id])
-  walletId      String
-  note          String?
-  confirmed     Boolean              @default(true)
-  countInTotal  Boolean              @default(true)
-  startDate     DateTime
-  lastOcurrence DateTime
-  nextOcurrence DateTime
-  rule          String
-  id            String               @id @default(uuid())
-  transactions  Transaction[]
-  lastEdit      DateTime             @updatedAt
-  deleted       Boolean              @default(false)
+  money          Float
+  description    String
+  category       String
+  direction      TransactionDirection
+  wallet         Wallet               @relation(fields: [walletID], references: [id])
+  walletID       String
+  note           String?
+  confirmed      Boolean              @default(true)
+  countInTotal   Boolean              @default(true)
+  startDate      DateTime
+  lastOccurrence DateTime
+  nextOccurrence DateTime
+  rule           String
+  id             String               @id @default(uuid())
+  transactions   Transaction[]
+  lastEdit       DateTime             @updatedAt
+  deleted        Boolean              @default(false)
+
+  @@index([walletID])
 }
 
 model TransactionModel {
   money        Float
   description  String
-  category     String
+  category     String // TODO: Change to Category and there should be default system categories
   direction    TransactionDirection
-  wallet       Wallet               @relation(fields: [walletId], references: [id])
-  walletId     String
+  wallet       Wallet               @relation(fields: [walletID], references: [id])
+  walletID     String
   note         String?
   confirmed    Boolean              @default(true)
   countInTotal Boolean              @default(true)
   id           String               @id @default(uuid())
   lastEdit     DateTime             @updatedAt
   deleted      Boolean              @default(false)
+
+  @@index([walletID])
 }
 
 model Transfer {
   description  String
   date         DateTime
-  from         Wallet   @relation("TransactionFromWallet", fields: [fromId], references: [id])
-  fromId       String
-  to           Wallet   @relation("TransactionToWallet", fields: [toId], references: [id])
-  toId         String
+  from         Transaction @relation("TransferFromTransaction", fields: [fromID], references: [id])
+  fromID       String      @unique
+  to           Transaction @relation("TransferToTransaction", fields: [toID], references: [id])
+  toID         String      @unique
   note         String
-  confirmed    Boolean  @default(true)
-  countInTotal Boolean  @default(true)
-  id           String   @id @default(uuid())
-  lastEdit     DateTime @updatedAt
-  deleted      Boolean  @default(false)
+  confirmed    Boolean     @default(true)
+  countInTotal Boolean     @default(true)
+  id           String      @id @default(uuid())
+  lastEdit     DateTime    @updatedAt
+  deleted      Boolean     @default(false)
+
+  @@index([fromID, toID])
 }
 
 model TransferModel {
@@ -282,14 +308,16 @@ model TransferModel {
   note         String
   confirmed    Boolean  @default(true)
   countInTotal Boolean  @default(true)
-  from         Wallet   @relation("TransactionModelFromWallet", fields: [fromId], references: [id])
-  fromId       String
-  to           Wallet   @relation("TransactionModelToWallet", fields: [toId], references: [id])
-  toId         String
+  from         Wallet   @relation("TransactionModelFromWallet", fields: [fromID], references: [id])
+  fromID       String
+  to           Wallet   @relation("TransactionModelToWallet", fields: [toID], references: [id])
+  toID         String
   fromMoney    Float
   toMoney      Float
   taxMoney     Float    @default(0)
   id           String   @id @default(uuid())
   lastEdit     DateTime @updatedAt
   deleted      Boolean  @default(false)
+
+  @@index([fromID, toID])
 }

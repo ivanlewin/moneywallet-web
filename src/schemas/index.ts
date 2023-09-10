@@ -117,7 +117,7 @@ export const PersonSchema = z.object({
 
 export const EventPersonSchema = z.any();
 
-export const DebtTypeSchema = z.literal(0);
+export const DebtTypeSchema = z.union([z.literal(0), z.literal(1)]);
 export const DebtSchema = z.object({
   type: DebtTypeSchema,
   icon: z.string(), // Icon
