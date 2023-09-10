@@ -19,14 +19,14 @@
   },
   "private": false,
   "scripts": {
-    "dev": "next dev",
+    "dev": "next dev -p 3001",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "prismaGenerate": "npx prisma generate",
-    "prismaMigrate": "npx prisma migrate",
-    "prismaStudio": "npx prisma studio",
-    "prismaPush": "npx prisma db push"
+    "pgenerate": "npx prisma generate",
+    "pmigrate": "npx prisma migrate",
+    "pstudio": "npx prisma studio",
+    "ppush": "npx prisma db push"
   },
   "homepage": "https://github.com/ivanlewin/moneywallet-web",
   "dependencies": {
@@ -48,6 +48,7 @@
   "devDependencies": {
     "@types/node": "^20.5.7",
     "@types/react": "^18.2.21",
+    "@typescript-eslint/parser": "^6.5.0",
     "eslint": "8.48.0",
     "eslint-config-next": "13.4.19",
     "prisma": "^5.2.0",
