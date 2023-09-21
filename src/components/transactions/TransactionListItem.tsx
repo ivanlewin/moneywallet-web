@@ -1,15 +1,16 @@
-import CurrencyDisplay from 'components/Currencies/CurrencyDisplay';
+import CurrencyDisplay from 'components/currencies/CurrencyDisplay';
+import IconDisplay from 'components/Icons/IconDisplay';
+import { useTransactionUtils } from 'contexts/TransactionUtils';
 import { useRouter } from 'next/router';
 import React from 'react';
-import { Transaction } from 'types/database';
+import { Serialized } from 'types/core';
 import { formatTime } from 'utils/formatting';
 
 import { ListItem, ListItemAvatar, ListItemProps, ListItemText } from '@mui/material';
+import { Transaction } from '@prisma/client';
 
-import { useTransactionUtils } from 'contexts/TransactionUtils';
-import IconDisplay from 'components/Icons/IconDisplay';
 type TransactionListItemProps = ListItemProps & {
-  transaction: Transaction;
+  transaction: Serialized<Transaction>;
 };
 export default function TransactionListItem({ transaction, ...props }: TransactionListItemProps) {
   const router = useRouter();
@@ -23,16 +24,24 @@ export default function TransactionListItem({ transaction, ...props }: Transacti
     router.push('/transactions/[transactionID]', `/transactions/${transaction.id}`);
   };
 
-  if (!completeTransaction || !transactionCurrency) {
-    return null;
-  }
-
   return (
     <ListItem
       {...props}
-      onClick={goToDetail}
-      sx={{ ...props.sx, cursor: 'pointer' }}
       title='Open the transaction detail'
+      onClick={goToDetail}
+      sx={{
+        ...props.sx,
+        cursor: 'pointer',
+        '&:hover': {
+          bgcolor: 'action.hover'
+        },
+        '&:active': {
+          bgcolor: 'action.selected'
+        },
+        '&:focus': {
+          bgcolor: 'action.selected'
+        }
+      }}
     >
       <ListItemAvatar >
         <IconDisplay icon={transactionCategory?.icon} />

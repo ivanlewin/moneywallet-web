@@ -1,16 +1,16 @@
 import { createContext, ReactNode, useCallback, useContext, useMemo } from 'react';
 import { CompleteTransaction } from 'types';
-import { Category, Currency, Transaction, Wallet, Event, Person, Place } from 'types/database';
+import { Category, Currency, Transaction, Wallet, Event, Person, Place } from '@prisma/client';
 import { useDatabase } from './DatabaseContext';
 
 type TransactionUtilsValue = {
   getTransaction: (transactionID: Transaction['id']) => Transaction | undefined;
   getTransactionCategory: (transactionCategoryID: Transaction['category']) => Category | undefined;
-  getTransactionWallet: (transactionWalletID: Transaction['wallet']) => Wallet | undefined;
-  getTransactionCurrency: (walletCurrencyCode: Wallet['currency']) => Currency | undefined;
-  getTransactionEvent: (transactionEventID: Transaction['event']) => Event | undefined;
+  getTransactionWallet: (transactionWalletID: Transaction['walletID']) => Wallet | undefined;
+  getTransactionCurrency: (walletCurrencyCode: Wallet['currencyIso']) => Currency | undefined;
+  getTransactionEvent: (transactionEventID: Transaction['eventID']) => Event | undefined;
   getTransactionPeople: (transactionID: Transaction['id']) => Person[] | undefined;
-  getTransactionPlace: (transactionPlaceID: Transaction['place']) => Place | undefined;
+  getTransactionPlace: (transactionPlaceID: Transaction['placeID']) => Place | undefined;
   getCompleteTransaction: (transactionID: Transaction['id']) => CompleteTransaction | undefined;
 };
 

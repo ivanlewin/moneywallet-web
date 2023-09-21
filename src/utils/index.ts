@@ -1,4 +1,4 @@
-import { Transaction, Wallet } from 'types/database';
+import { Transaction, TransactionDirection, Wallet } from '@prisma/client';
 
 export function isLocalStorageAvailable() {
   return (
@@ -10,30 +10,31 @@ export function isLocalStorageAvailable() {
   );
 }
 
-export function signAmount(amount: number, direction?: number) {
-  return amount * (direction === 0 ? -1 : 1);
+export function signAmount(amount: number, direction?: TransactionDirection) {
+  return amount * (direction === 'EXPENSE' ? -1 : 1);
 }
 
-export function calculateBalance(transactions: Transaction[], wallet?: Wallet) {
+type calculateBalanceTransaction = Pick<Transaction, 'confirmed' | 'countInTotal' | 'deleted' | 'walletID' | 'money' | 'direction'>;
+type calculateBalanceWallet = Pick<Wallet, 'id' | 'startMoney'>;
+export function calculateBalance(transactions: calculateBalanceTransaction[], wallet?: calculateBalanceWallet) {
   return transactions
     .filter(transaction => (
       transaction.confirmed === true &&
-      transaction.count_in_total === true &&
+      transaction.countInTotal === true &&
       transaction.deleted === false &&
-      (wallet ? transaction.wallet === wallet.id : true)
+      (wallet ? transaction.walletID === wallet.id : true)
     ))
     .reduce((acc, { money, direction }) => (
       acc + signAmount(money, direction)
     ), 0)
-    + (wallet?.start_money ?? 0);
+    + (wallet?.startMoney ?? 0);
 }
 
-export function calculateBalancesForTheDay(transactions: Transaction[]) {
-  const currencies = transactions.map(transaction => transaction.wallet);
+export function calculateBalancesForTheDay(transactions: calculateBalanceTransaction[]) {
   return transactions
     .filter(transaction => (
       transaction.confirmed === true &&
-      transaction.count_in_total === true &&
+      transaction.countInTotal === true &&
       transaction.deleted === false
     ))
     .reduce((acc, { money, direction }) => (

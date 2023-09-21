@@ -1,22 +1,22 @@
 import BackButton from 'components/common/BackButton';
-import CurrencyDisplay from 'components/Currencies/CurrencyDisplay';
+import CurrencyDisplay from 'components/currencies/CurrencyDisplay';
 
 import {
   Checkbox, FormControlLabel, Grid, Paper, TextField, Typography, useTheme
 } from '@mui/material';
 import { CategoryIcon, DateIcon, DescriptionIcon, EventIcon, NoteIcon, PeopleIcon, PlaceIcon, WalletIcon } from 'components/Icons';
+import { LegacyCategory, LegacyCurrency, LegacyEvent, LegacyPlace, LegacyTransaction, LegacyPerson, LegacyWallet } from 'types/legacy-database';
 import { ReactNode } from 'react';
-import { Category, Currency, Event, Person, Place, Transaction, Wallet } from 'types/database';
 
 type TransactionFormProps = {
   page: 'detail' | 'edit';
-  transaction: Pick<Transaction, 'confirmed' | 'count_in_total' | 'date' | 'description' | 'direction' | 'id' | 'money' | 'note'>;
-  transactionCategory?: Category;
-  transactionCurrency?: Currency;
-  transactionWallet?: Wallet;
-  transactionEvent?: Event;
-  transactionPeople?: Person[];
-  transactionPlace?: Place;
+  transaction: Pick<LegacyTransaction, 'confirmed' | 'count_in_total' | 'date' | 'description' | 'direction' | 'id' | 'money' | 'note'>;
+  transactionCategory?: LegacyCategory;
+  transactionCurrency?: LegacyCurrency;
+  transactionWallet?: LegacyWallet;
+  transactionEvent?: LegacyEvent;
+  transactionPeople?: LegacyPerson[];
+  transactionPlace?: LegacyPlace;
   actions?: ReactNode;
 };
 
@@ -40,7 +40,7 @@ export default function TransactionForm({
           container
           sx={{
             height: 120,
-            backgroundColor: theme.palette.primary.main,
+            background: theme.palette.primary.main,
             color: theme.palette.common.white,
           }}
         >

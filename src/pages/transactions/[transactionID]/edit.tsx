@@ -1,49 +1,66 @@
-import { NextPage } from 'next';
-import { useRouter } from 'next/router';
+import TransactionForm from 'components/transactions/TransactionForm';
+import { DATETIME_FORMAT } from 'const';
+import dayjs from 'dayjs';
+import { GetServerSideProps, InferGetServerSidePropsType } from 'next';
 
-import SaveIcon from '@mui/icons-material/Save';
-import { IconButton, useTheme } from '@mui/material';
-import TransactionForm from 'components/Transactions/TransactionForm';
-import { useTransactionUtils } from 'contexts/TransactionUtils';
-import Link from 'next/link';
+import { DetailedTransaction } from './';
 
-const TransactionDetail: NextPage = () => {
-  const theme = useTheme();
-  const router = useRouter();
-  const transactionID = router.query.transactionID as string;
+export const getServerSideProps: GetServerSideProps<{ transaction: DetailedTransaction | null; }> = async ({ params }) => {
+  if (!params || typeof params.transactionID !== 'string') {
+    return { props: { transaction: null } };
+  }
+  const transactionID = params.transactionID;
+  const transaction = await prisma.transaction.findFirstOrThrow({
+    where: { id: transactionID },
+    include: {
+      wallet: {
+        select: {
+          id: true,
+          name: true,
+          currency: { select: { decimals: true, iso: true, symbol: true, } }
+        }
+      },
+      event: { select: { id: true, name: true, } },
+      people: { select: { id: true, name: true, } },
+      place: { select: { id: true, name: true, } }
+    }
+  });
+  const category = await prisma.category.findFirstOrThrow({
+    where: { id: transaction.categoryID },
+    select: { id: true, name: true, }
+  });
+  const transfer = await prisma.transfer.findFirst({
+    where: {
+      OR: [
+        { fromID: transaction.id },
+        { toID: transaction.id },
+      ]
+    },
+    select: {
+      id: true,
+      fromID: true,
+      toID: true,
+    }
+  });
+  return {
+    props: {
+      transaction: {
+        ...transaction,
+        date: dayjs(transaction.date).format(DATETIME_FORMAT),
+        lastEdit: dayjs(transaction.lastEdit).format(DATETIME_FORMAT),
+        category,
+        transfer
+      }
+    }
+  };
+};
 
-  const { getCompleteTransaction } = useTransactionUtils();
-  const transaction = getCompleteTransaction(transactionID);
+export default function EditTransaction({ transaction }: InferGetServerSidePropsType<typeof getServerSideProps>) {
   if (!transaction) {
     return null;
   }
 
-  const actions = (
-    <Link
-      href='/transactions/[transactionID]'
-      as={`/transactions/${transaction.id}`}
-      title='Save'
-      style={{ marginLeft: 'auto' }}
-    >
-      <IconButton title='Save' >
-        <SaveIcon htmlColor={theme.palette.common.white} />
-      </IconButton>
-    </Link>
-  );
-
   return (
-    <TransactionForm
-      page='edit'
-      transaction={transaction}
-      transactionCategory={transaction.category}
-      transactionCurrency={transaction.currency}
-      transactionWallet={transaction.wallet}
-      transactionEvent={transaction.event}
-      transactionPeople={transaction.people}
-      transactionPlace={transaction.place}
-      actions={actions}
-    />
+    <TransactionForm page='edit' transaction={transaction} />
   );
 };
-
-export default TransactionDetail;

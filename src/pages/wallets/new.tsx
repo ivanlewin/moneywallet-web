@@ -1,5 +1,5 @@
 import BackButton from 'components/common/BackButton';
-import CurrencyDisplay from 'components/Currencies/CurrencyDisplay';
+import CurrencyDisplay from 'components/currencies/CurrencyDisplay';
 import { useDatabase } from 'contexts/DatabaseContext';
 import { NextPage } from 'next';
 import { useRouter } from 'next/router';

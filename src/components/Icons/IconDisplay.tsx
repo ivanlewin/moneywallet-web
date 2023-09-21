@@ -1,8 +1,7 @@
 import Icon, { IconProps } from 'components/Icons/Icon';
-import React from 'react';
-import { IconSchema } from 'schemas';
-
 import { FALLBACK_ICON } from 'fixtures';
+import React from 'react';
+import { LegacyIconSchema } from 'schemas';
 
 type IconDisplayProps = Partial<IconProps> & {
   icon?: string;
@@ -14,7 +13,7 @@ export default function IconDisplay({ icon, ...props }: IconDisplayProps) {
     }
     try {
       const object = JSON.parse(icon);
-      const parsed = IconSchema.parse(object);
+      const parsed = LegacyIconSchema.parse(object);
       return parsed;
     } catch (error) {
       return FALLBACK_ICON;

@@ -1,7 +1,7 @@
 import dayjs from "dayjs";
 import localizedFormat from "dayjs/plugin/localizedFormat";
 dayjs.extend(localizedFormat);
-import { Currency } from 'types/database';
+import { Currency } from '@prisma/client';
 
 const defaultCurrency = { decimals: 2, iso: 'USD' };
 const defaultOptions = { style: 'currency', currencyDisplay: 'narrowSymbol', };
@@ -10,7 +10,7 @@ export function formatCurrency(
   currency: Pick<Currency, 'decimals' | 'iso'> = defaultCurrency,
   options: Intl.NumberFormatOptions = {}
 ) {
-  const locale = navigator.language;
+  const locale = typeof navigator !== 'undefined' ? navigator.language : undefined;
   const intl = new Intl.NumberFormat(locale, { currency: currency.iso, ...defaultOptions, ...options, });
   return intl.format(amount / (10 ** currency.decimals));
 }

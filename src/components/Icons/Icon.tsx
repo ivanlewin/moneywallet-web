@@ -1,6 +1,6 @@
 import { Avatar, Icon as MUIIcon, SxProps, Theme, useTheme } from "@mui/material";
 import { CSSProperties } from "react";
-import type { Icon as IconType } from 'types/database';
+import type { LegacyIcon as IconType } from 'types/legacy-database';
 import { iconMapping } from "./icon-mapping";
 
 export type IconProps = IconType & {

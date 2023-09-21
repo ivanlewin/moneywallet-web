@@ -1,6 +1,6 @@
 import { createContext, ReactNode, useCallback, useContext, useMemo } from 'react';
 import { CompleteTransfer } from 'types';
-import { Transaction, Transfer } from 'types/database';
+import { Transaction, Transfer } from '@prisma/client';
 import { useDatabase } from './DatabaseContext';
 import { useTransactionUtils } from './TransactionUtils';
 
@@ -40,7 +40,7 @@ const TransferUtilsProvider = ({ children }: TransferUtilsProviderProps) => {
     if (!transfers) {
       return;
     }
-    if (transactionDirection === 0) {
+    if (transactionDirection === 'EXPENSE') {
       return transfers.find(transfer => transfer.from === transactionID);
     } else {
       return transfers.find(transfer => transfer.to === transactionID);
@@ -52,8 +52,8 @@ const TransferUtilsProvider = ({ children }: TransferUtilsProviderProps) => {
     if (!transfer) {
       return;
     }
-    const from = getTransaction(transfer.from);
-    const to = getTransaction(transfer.to);
+    const from = getTransaction(transfer.fromID);
+    const to = getTransaction(transfer.toID);
     if (!from || !to) {
       return;
     }

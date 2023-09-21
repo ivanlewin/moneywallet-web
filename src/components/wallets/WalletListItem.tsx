@@ -1,6 +1,6 @@
 import { useDatabase } from 'contexts/DatabaseContext';
 import React from 'react';
-import { Wallet } from 'types/database';
+import { LegacyWallet } from 'types/legacy-database';
 import { calculateBalance } from 'utils';
 import { formatCurrency } from 'utils/formatting';
 
@@ -9,7 +9,7 @@ import { ListItem, ListItemButton, ListItemIcon, ListItemProps, ListItemText } f
 import IconDisplay from '../Icons/IconDisplay';
 
 type WalletListItemProps = ListItemProps & {
-  wallet: Wallet;
+  wallet: LegacyWallet;
   selected: boolean;
 };
 export default function WalletListItem({ selected, wallet, ...props }: WalletListItemProps) {

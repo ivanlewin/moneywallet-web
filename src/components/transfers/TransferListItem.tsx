@@ -1,16 +1,17 @@
-import { useRouter } from 'next/router';
-import React from 'react';
-import { Transfer } from 'types/database';
-import { formatTime } from 'utils/formatting';
-
-import { ListItem, ListItemAvatar, ListItemProps, ListItemText, useTheme } from '@mui/material';
-
-import CurrencyDisplay from 'components/Currencies/CurrencyDisplay';
+import CurrencyDisplay from 'components/currencies/CurrencyDisplay';
 import IconDisplay from 'components/Icons/IconDisplay';
 import { useTransactionUtils } from 'contexts/TransactionUtils';
 import { useTransferUtils } from 'contexts/TransferUtils';
+import { useRouter } from 'next/router';
+import React from 'react';
+import { formatTime } from 'utils/formatting';
+
+import { ListItem, ListItemAvatar, ListItemProps, ListItemText, useTheme } from '@mui/material';
+import { Transfer } from '@prisma/client';
+import { Serialized } from 'types/core';
+
 type TransferListItemProps = ListItemProps & {
-  transfer: Transfer;
+  transfer: Serialized<Transfer>;
 };
 export default function TransferListItem({ transfer, ...props }: TransferListItemProps) {
   const router = useRouter();
@@ -22,8 +23,8 @@ export default function TransferListItem({ transfer, ...props }: TransferListIte
   if (!completeTransfer) {
     return null;
   }
-  const completeFromTransaction = transfer.from ? getCompleteTransaction(transfer.from) : undefined;
-  const completeToTransaction = transfer.to ? getCompleteTransaction(transfer.to) : undefined;
+  const completeFromTransaction = transfer.fromID ? getCompleteTransaction(transfer.fromID) : undefined;
+  const completeToTransaction = transfer.toID ? getCompleteTransaction(transfer.toID) : undefined;
 
   const goToDetail = () => {
     router.push('/transfers/[transferID]', `/transfers/${transfer.id}`);

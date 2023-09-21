@@ -4,21 +4,20 @@ import * as React from 'react';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { Accordion, AccordionDetails, AccordionProps, AccordionSummary, Grid, List, Typography } from '@mui/material';
 
-import WalletListItem from '../Wallets/WalletListItem';
+import WalletListItem from '../wallets/WalletListItem';
 
-import type { Wallet } from 'types/database';
-import NewWalletListItem from 'components/Wallets/NewWalletListItem';
-import ManageWalletsListItem from 'components/Wallets/ManageWalletsListItem';
-import TotalWalletListItem from 'components/Wallets/TotalWalletListItem';
+import type { LegacyWallet } from 'types/legacy-database';
+import NewWalletListItem from 'components/wallets/NewWalletListItem';
+import ManageWalletsListItem from 'components/wallets/ManageWalletsListItem';
 import IconDisplay from 'components/Icons/IconDisplay';
 import { TOTAL_WALLET_ICON } from 'fixtures';
 
 export type SidebarHeaderProps = Omit<AccordionProps, 'children'>;
 export default function SidebarHeader(props: SidebarHeaderProps) {
   const { database } = useDatabase();
-  const [selectedWallet, setSelectedWallet] = React.useState<Wallet['id'] | 'total'>();
+  const [selectedWallet, setSelectedWallet] = React.useState<LegacyWallet['id'] | 'total'>();
   const { wallets } = database;
-  const walletList: Wallet[] | undefined = wallets?.filter(wallet => wallet.archived === false && wallet.deleted === false).sort((a, b) => a.index - b.index);
+  const walletList: LegacyWallet[] | undefined = wallets?.filter(wallet => wallet.archived === false && wallet.deleted === false).sort((a, b) => a.index - b.index);
 
   return (
     <Accordion

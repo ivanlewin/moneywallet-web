@@ -1,7 +1,7 @@
 import { z } from 'zod';
 import { DateSchema, DatetimeSchema } from './datetime';
 
-export const CurrencySchema = z.object({
+export const LegacyCurrencySchema = z.object({
   iso: z.string().length(3), // ISO 4217,
   name: z.string(),
   symbol: z.string().optional(),
@@ -11,7 +11,7 @@ export const CurrencySchema = z.object({
   deleted: z.boolean(),
 });
 
-export const IconSchema = z.union([
+export const LegacyIconSchema = z.union([
   z.object({
     type: z.literal('color'),
     color: z.string().regex(/^#(?:[0-9a-fA-F]{3}){1,2}$/),
@@ -23,7 +23,7 @@ export const IconSchema = z.union([
   })
 ]);
 
-export const WalletSchema = z.object({
+export const LegacyWalletSchema = z.object({
   name: z.string(),
   icon: z.string(), // Icon
   currency: z.string(), // Currency['symbol']
@@ -36,12 +36,12 @@ export const WalletSchema = z.object({
   deleted: z.boolean(),
 });
 
-export const CategoryTypeSchema = z.union([
+export const LegacyCategoryTypeSchema = z.union([
   z.literal(0), // Income
   z.literal(1), // Expense
   z.literal(2) // System
 ]);
-export const CategoryTagSchema = z.union([
+export const LegacyCategoryTagSchema = z.union([
   z.literal("system::transfer"),
   z.literal("system::transfer_tax"),
   z.literal("system::debt"),
@@ -59,7 +59,7 @@ export const CategoryTagSchema = z.union([
   z.literal("default::salary"),
   z.literal("default::travel"),
 ]);
-export const CategoryIDSchema = z.union([
+export const LegacyCategoryIDSchema = z.union([
   z.string().uuid(),
   z.literal("system-uuid-system::transfer"),
   z.literal("system-uuid-system::transfer_tax"),
@@ -71,20 +71,20 @@ export const CategoryIDSchema = z.union([
   z.literal("system-uuid-system::deposit"),
   z.literal("system-uuid-system::withdraw"),
 ]);
-export const CategorySchema = z.object({
+export const LegacyCategorySchema = z.object({
   name: z.string(),
   icon: z.string(), // Icon
-  type: CategoryTypeSchema,
+  type: LegacyCategoryTypeSchema,
   parent: z.string().uuid().optional(),
-  tag: CategoryTagSchema.optional(),
+  tag: LegacyCategoryTagSchema.optional(),
   show_report: z.boolean(),
   index: z.number(),
-  id: CategoryIDSchema,
+  id: LegacyCategoryIDSchema,
   last_edit: z.number(), // timestamp
   deleted: z.boolean(),
 });
 
-export const EventSchema = z.object({
+export const LegacyEventSchema = z.object({
   name: z.string(),
   icon: z.string(), // Icon
   note: z.string().optional(),
@@ -95,7 +95,7 @@ export const EventSchema = z.object({
   deleted: z.boolean(),
 });
 
-export const PlaceSchema = z.object({
+export const LegacyPlaceSchema = z.object({
   name: z.string(),
   icon: z.string(), // Icon
   address: z.string().optional(),
@@ -106,7 +106,7 @@ export const PlaceSchema = z.object({
   deleted: z.boolean(),
 });
 
-export const PersonSchema = z.object({
+export const LegacyPersonSchema = z.object({
   name: z.string(),
   icon: z.string(), // Icon
   note: z.string().optional(),
@@ -115,11 +115,11 @@ export const PersonSchema = z.object({
   deleted: z.boolean(),
 });
 
-export const EventPersonSchema = z.any();
+export const LegacyEventPersonSchema = z.any();
 
-export const DebtTypeSchema = z.union([z.literal(0), z.literal(1)]);
-export const DebtSchema = z.object({
-  type: DebtTypeSchema,
+export const LegacyDebtTypeSchema = z.union([z.literal(0), z.literal(1)]);
+export const LegacyDebtSchema = z.object({
+  type: LegacyDebtTypeSchema,
   icon: z.string(), // Icon
   description: z.string(),
   date: DateSchema,
@@ -132,41 +132,34 @@ export const DebtSchema = z.object({
   deleted: z.boolean(),
 });
 
-export const DebtPersonSchema = z.any();
+export const LegacyDebtPersonSchema = z.any();
 
-export const BudgetSchema = z.any();
+export const LegacyBudgetSchema = z.any();
 
-export const BudgetWalletSchema = z.any();
+export const LegacyBudgetWalletSchema = z.any();
 
-export const SavingsSchema = z.any();
+export const LegacySavingsSchema = z.any();
 
-export const RecurrentTransferSchema = z.any();
+export const LegacyRecurrentTransferSchema = z.any();
 
-export const TransactionCategorySchema = z.union([
-  z.string().uuid(),
-  z.literal("system-uuid-system::debt"),
-  z.literal("system-uuid-system::paid_debt"),
-  z.literal("system-uuid-system::transfer"),
-  z.literal("system-uuid-system::transfer_tax"),
-]);
-export const TransactionDirectionSchema = z.union([
+export const LegacyTransactionDirectionSchema = z.union([
   z.literal(0), // expense
   z.literal(1), // income
 ]);
-export const TransactionTypeSchema = z.union([
+export const LegacyTransactionTypeSchema = z.union([
   z.literal(0), // 
   z.literal(1), // 
   z.literal(2), // 
   z.literal(3), // 
   z.literal(4), // 
 ]);
-export const TransactionSchema = z.object({
+export const LegacyTransactionSchema = z.object({
   money: z.number(),
   date: DatetimeSchema,
   description: z.string(),
-  category: TransactionCategorySchema,
-  direction: TransactionDirectionSchema,
-  type: TransactionTypeSchema,
+  category: LegacyCategoryIDSchema,
+  direction: LegacyTransactionDirectionSchema,
+  type: LegacyTransactionTypeSchema,
   wallet: z.string().uuid(),
   place: z.string().optional(),
   note: z.string().optional(),
@@ -180,7 +173,7 @@ export const TransactionSchema = z.object({
   recurrence: z.string().uuid().optional(),
 });
 
-export const RecurrentTransactionSchema = TransactionSchema.pick({
+export const LegacyRecurrentTransactionSchema = LegacyTransactionSchema.pick({
   money: true,
   description: true,
   category: true,
@@ -199,7 +192,7 @@ export const RecurrentTransactionSchema = TransactionSchema.pick({
   deleted: z.boolean(),
 });
 
-export const TransactionPersonSchema = z.object({
+export const LegacyTransactionPersonSchema = z.object({
   transaction: z.string().uuid(),
   person: z.string().uuid(),
   id: z.string().uuid(),
@@ -207,7 +200,7 @@ export const TransactionPersonSchema = z.object({
   deleted: z.boolean(),
 });
 
-export const TransactionModelSchema = TransactionSchema.pick({
+export const LegacyTransactionModelSchema = LegacyTransactionSchema.pick({
   money: true,
   description: true,
   category: true,
@@ -222,7 +215,7 @@ export const TransactionModelSchema = TransactionSchema.pick({
   deleted: z.boolean(),
 });
 
-export const TransferSchema = z.object({
+export const LegacyTransferSchema = z.object({
   description: z.string(),
   date: DatetimeSchema,
   from: z.string().uuid(),
@@ -235,9 +228,9 @@ export const TransferSchema = z.object({
   deleted: z.boolean(),
 });
 
-export const TransferPersonSchema = z.any();
+export const LegacyTransferPersonSchema = z.any();
 
-export const TransferModelSchema = TransferSchema.pick({
+export const TransferModelSchema = LegacyTransferSchema.pick({
   description: true,
   note: true,
   confirmed: true,
@@ -253,37 +246,37 @@ export const TransferModelSchema = TransferSchema.pick({
   deleted: z.boolean(),
 });
 
-export const AttachmentSchema = z.any();
+export const LegacyAttachmentSchema = z.any();
 
-export const TransactionAttachmentSchema = z.any();
+export const LegacyTransactionAttachmentSchema = z.any();
 
-export const TransferAttachmentSchema = z.any();
+export const LegacyTransferAttachmentSchema = z.any();
 
-export const DatabaseSchema = z.object({
+export const LegacyDatabaseSchema = z.object({
   header: z.object({
     version_code: z.number()
   }),
-  currencies: z.array(CurrencySchema),
-  wallets: z.array(WalletSchema),
-  categories: z.array(CategorySchema),
-  events: z.array(EventSchema),
-  places: z.array(PlaceSchema),
-  people: z.array(PersonSchema),
-  event_people: z.array(EventPersonSchema),
-  debts: z.array(DebtSchema),
-  debt_people: z.array(DebtPersonSchema),
-  budgets: z.array(BudgetSchema),
-  budget_wallets: z.array(BudgetWalletSchema),
-  savings: z.array(SavingsSchema),
-  recurrent_transactions: z.array(RecurrentTransactionSchema),
-  recurrent_transfers: z.array(RecurrentTransferSchema),
-  transactions: z.array(TransactionSchema),
-  transaction_people: z.array(TransactionPersonSchema),
-  transaction_models: z.array(TransactionModelSchema),
-  transfers: z.array(TransferSchema),
-  transfer_people: z.array(TransferPersonSchema),
+  currencies: z.array(LegacyCurrencySchema),
+  wallets: z.array(LegacyWalletSchema),
+  categories: z.array(LegacyCategorySchema),
+  events: z.array(LegacyEventSchema),
+  places: z.array(LegacyPlaceSchema),
+  people: z.array(LegacyPersonSchema),
+  event_people: z.array(LegacyEventPersonSchema),
+  debts: z.array(LegacyDebtSchema),
+  debt_people: z.array(LegacyDebtPersonSchema),
+  budgets: z.array(LegacyBudgetSchema),
+  budget_wallets: z.array(LegacyBudgetWalletSchema),
+  savings: z.array(LegacySavingsSchema),
+  recurrent_transactions: z.array(LegacyRecurrentTransactionSchema),
+  recurrent_transfers: z.array(LegacyRecurrentTransferSchema),
+  transactions: z.array(LegacyTransactionSchema),
+  transaction_people: z.array(LegacyTransactionPersonSchema),
+  transaction_models: z.array(LegacyTransactionModelSchema),
+  transfers: z.array(LegacyTransferSchema),
+  transfer_people: z.array(LegacyTransferPersonSchema),
   transfer_models: z.array(TransferModelSchema),
-  attachments: z.array(AttachmentSchema),
-  transaction_attachment: z.array(TransactionAttachmentSchema),
-  transfer_attachment: z.array(TransferAttachmentSchema),
+  attachments: z.array(LegacyAttachmentSchema),
+  transaction_attachment: z.array(LegacyTransactionAttachmentSchema),
+  transfer_attachment: z.array(LegacyTransferAttachmentSchema),
 });

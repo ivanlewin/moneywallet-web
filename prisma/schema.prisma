@@ -84,18 +84,6 @@ enum CategoryTag {
   DEFAULT_TRAVEL
 }
 
-enum CategoryID {
-  SYSTEM_UUID_SYSTEM_TRANSFER
-  SYSTEM_UUID_SYSTEM_TRANSFER_TAX
-  SYSTEM_UUID_SYSTEM_DEBT
-  SYSTEM_UUID_SYSTEM_CREDIT
-  SYSTEM_UUID_SYSTEM_PAID_DEBT
-  SYSTEM_UUID_SYSTEM_PAID_CREDIT
-  SYSTEM_UUID_SYSTEM_TAX
-  SYSTEM_UUID_SYSTEM_DEPOSIT
-  SYSTEM_UUID_SYSTEM_WITHDRAW
-}
-
 model Category {
   name          String
   iconResource  String?
@@ -103,16 +91,16 @@ model Category {
   iconName      String?
   type          CategoryType
   parentID      String?
-  parent        Category?    @relation("ParentCategory", fields: [parentID], references: [id])
-  children      Category[]   @relation("ParentCategory")
+  parent        Category?     @relation("ParentCategory", fields: [parentID], references: [id])
+  children      Category[]    @relation("ParentCategory")
   tag           CategoryTag?
-  mwCategoryID  CategoryID?
-  showInReports Boolean      @default(true)
-  index         Int          @default(0)
-  id            String       @id @default(uuid())
-  lastEdit      DateTime     @updatedAt
-  deleted       Boolean      @default(false)
-  user          User         @relation(fields: [userID], references: [id])
+  transactions  Transaction[]
+  showInReports Boolean       @default(true)
+  index         Int           @default(0)
+  id            String        @id @default(uuid())
+  lastEdit      DateTime      @updatedAt
+  deleted       Boolean       @default(false)
+  user          User          @relation(fields: [userID], references: [id])
   userID        String
 
   @@index([userID])
@@ -197,13 +185,6 @@ model Debt {
   @@index([userID])
 }
 
-enum TransactionCategory {
-  SYSTEM_UUID_SYSTEM_DEBT
-  SYSTEM_UUID_SYSTEM_PAID_DEBT
-  SYSTEM_UUID_SYSTEM_TRANSFER
-  SYSTEM_UUID_SYSTEM_TRANSFER_TAX
-}
-
 enum TransactionDirection {
   EXPENSE
   INCOME
@@ -221,7 +202,8 @@ model Transaction {
   money                  Float
   date                   DateTime
   description            String
-  category               String // TODO: Change to Category and there should be default system categories
+  category               Category              @relation(fields: [categoryID], references: [id])
+  categoryID             String
   direction              TransactionDirection
   type                   TransactionType
   wallet                 Wallet                @relation(fields: [walletID], references: [id])

@@ -1,10 +1,8 @@
 import { createContext, ReactNode, useContext, useEffect, useState } from 'react';
-import { DatabaseSchema } from 'schemas';
-import { Database } from 'types/database';
-import { isLocalStorageAvailable } from 'utils';
+import { LegacyDatabase } from 'types/legacy-database';
 
 type DatabaseContextValue = {
-  database: Partial<Database>,
+  database: Partial<LegacyDatabase>,
 };
 
 const DatabaseContext = createContext<DatabaseContextValue>({
@@ -17,23 +15,9 @@ type DatabaseProviderProps = {
   children: ReactNode;
 };
 const DatabaseProvider = ({ children }: DatabaseProviderProps) => {
-  const [database, setDatabase] = useState<Partial<Database>>({});
+  const [database, setDatabase] = useState<Partial<LegacyDatabase>>({});
 
   useEffect(() => {
-    try {
-      if (!isLocalStorageAvailable) {
-        return;
-      }
-      const dbData = window.localStorage.getItem('database');
-      if (!dbData) {
-        return;
-      }
-      const db = JSON.parse(dbData);
-      const database = DatabaseSchema.parse(db);
-      setDatabase(database);
-    } catch (error) {
-      console.error(error);
-    }
   }, []);
 
   return (

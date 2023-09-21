@@ -1,7 +1,8 @@
-import { IconSchema, } from "schemas";
-import { Database, Category, Debt, RecurrentTransaction, Transaction } from "types/database";
-import { User, Prisma, CategoryType, CategoryTag, CategoryID, DebtType, TransactionDirection, TransactionType } from "@prisma/client";
+import { LegacyIconSchema, } from "schemas";
+import { LegacyDatabase, LegacyCategory, LegacyDebt, LegacyRecurrentTransaction, LegacyTransaction } from "types/legacy-database";
+import { User, Prisma, CategoryType, CategoryTag, DebtType, TransactionDirection, TransactionType } from "@prisma/client";
 import prisma from "../../lib/prisma";
+import { randomUUID } from "crypto";
 
 interface IconData {
   iconResource: string;
@@ -14,7 +15,7 @@ const parseIcon = (icon: string): IconData => {
   let iconColor = '';
   let iconName = '';
   const iconObject = JSON.parse(icon);
-  const parsedIcon = IconSchema.parse(iconObject);
+  const parsedIcon = LegacyIconSchema.parse(iconObject);
   if (parsedIcon.type === 'resource') {
     iconResource = parsedIcon.resource;
   } else {
@@ -24,12 +25,18 @@ const parseIcon = (icon: string): IconData => {
   return { iconResource, iconColor, iconName };
 };
 
-const categoryTypeMap: Record<Category['type'], CategoryType> = {
+/**
+ * Maps legacy database values to MoneyWalletWeb values
+ */
+const categoryTypeMap: Record<LegacyCategory['type'], CategoryType> = {
   0: "EXPENSE",
   1: "INCOME",
   2: "SYSTEM",
 };
-const categoryTagMap: Record<NonNullable<Category['tag']>, CategoryTag> = {
+/**
+ * Maps legacy database values to MoneyWalletWeb values
+ */
+const categoryTagMap: Record<NonNullable<LegacyCategory['tag']>, CategoryTag> = {
   "system::transfer": "SYSTEM_TRANSFER",
   "system::transfer_tax": "SYSTEM_TRANSFER_TAX",
   "system::debt": "SYSTEM_DEBT",
@@ -47,30 +54,31 @@ const categoryTagMap: Record<NonNullable<Category['tag']>, CategoryTag> = {
   "default::salary": "DEFAULT_SALARY",
   "default::travel": "DEFAULT_TRAVEL",
 };
-const categoryIDMap: Record<Category['id'], CategoryID> = {
-  "system-uuid-system::transfer": "SYSTEM_UUID_SYSTEM_TRANSFER",
-  "system-uuid-system::transfer_tax": "SYSTEM_UUID_SYSTEM_TRANSFER_TAX",
-  "system-uuid-system::debt": "SYSTEM_UUID_SYSTEM_DEBT",
-  "system-uuid-system::credit": "SYSTEM_UUID_SYSTEM_CREDIT",
-  "system-uuid-system::paid_debt": "SYSTEM_UUID_SYSTEM_PAID_DEBT",
-  "system-uuid-system::paid_credit": "SYSTEM_UUID_SYSTEM_PAID_CREDIT",
-  "system-uuid-system::tax": "SYSTEM_UUID_SYSTEM_TAX",
-  "system-uuid-system::deposit": "SYSTEM_UUID_SYSTEM_DEPOSIT",
-  "system-uuid-system::withdraw": "SYSTEM_UUID_SYSTEM_WITHDRAW",
-};
-const debtTypeMap: Record<Debt['type'], DebtType> = {
+/**
+ * Maps legacy database values to MoneyWalletWeb values
+ */
+const debtTypeMap: Record<LegacyDebt['type'], DebtType> = {
   0: "DEBT",
   1: "CREDIT",
 };
-const recurrentTransactionDirectionMap: Record<RecurrentTransaction['direction'], TransactionDirection> = {
+/**
+ * Maps legacy database values to MoneyWalletWeb values
+ */
+const recurrentTransactionDirectionMap: Record<LegacyRecurrentTransaction['direction'], TransactionDirection> = {
   0: "EXPENSE",
   1: "INCOME",
 };
-const transactionDirectionMap: Record<Transaction['direction'], TransactionDirection> = {
+/**
+ * Maps legacy database values to MoneyWalletWeb values
+ */
+const transactionDirectionMap: Record<LegacyTransaction['direction'], TransactionDirection> = {
   0: "EXPENSE",
   1: "INCOME",
 };
-const transactionTypeMap: Record<Transaction['type'], TransactionType> = {
+/**
+ * Maps legacy database values to MoneyWalletWeb values
+ */
+const transactionTypeMap: Record<LegacyTransaction['type'], TransactionType> = {
   0: "TRANSACTION",
   1: "TRANSFER",
   2: "DEBT",
@@ -78,7 +86,7 @@ const transactionTypeMap: Record<Transaction['type'], TransactionType> = {
   4: "MODEL",
 };
 
-export const importDatabase = async (data: Database) => {
+export const importLegacyDatabase = async (data: LegacyDatabase) => {
   let user: User;
   const existingUser = await prisma.user.findFirst();
   if (existingUser) {
@@ -90,11 +98,11 @@ export const importDatabase = async (data: Database) => {
     throw new Error('Failed to create user');
   }
 
-
   if (data.header.version_code !== 2) {
     throw new Error('Only databases of version 2 are supported.');
   }
 
+  // TODO: remove this after testing
   await prisma.transferModel.deleteMany();
   await prisma.transfer.deleteMany();
   await prisma.transactionModel.deleteMany();
@@ -151,6 +159,18 @@ export const importDatabase = async (data: Database) => {
     console.error(error);
   }
 
+  const categoryIDMap: Record<LegacyCategory['id'], string> = {
+    "system-uuid-system::transfer": "",
+    "system-uuid-system::transfer_tax": "",
+    "system-uuid-system::debt": "",
+    "system-uuid-system::credit": "",
+    "system-uuid-system::paid_debt": "",
+    "system-uuid-system::paid_credit": "",
+    "system-uuid-system::tax": "",
+    "system-uuid-system::deposit": "",
+    "system-uuid-system::withdraw": "",
+  };
+
   // import categories
   try {
     const categoriesData: Prisma.CategoryCreateManyInput[] = data.categories.map((category) => {
@@ -161,11 +181,16 @@ export const importDatabase = async (data: Database) => {
         tag: category.tag ? categoryTagMap[category.tag] : undefined,
         showInReports: category.show_report,
         index: category.index,
-        id: category.id in categoryIDMap ? undefined : category.id,
-        mwCategoryID: category.id in categoryIDMap ? categoryIDMap[category.id] : undefined,
         lastEdit: new Date(category.last_edit),
         deleted: category.deleted,
       };
+      if (category.id in categoryIDMap && categoryIDMap[category.id] === '') {
+        categoryIDMap[category.id] = randomUUID();
+        categoryData.id = categoryIDMap[category.id];
+      } else {
+        categoryData.id = category.id;
+      }
+
       let categoryIcon: IconData | undefined = undefined;
       try {
         categoryIcon = parseIcon(category.icon);
@@ -267,7 +292,7 @@ export const importDatabase = async (data: Database) => {
       money: transaction.money,
       date: new Date(transaction.date.replaceAll(' ', 'T')), // TODO: Allow passing custom timezone information
       description: transaction.description,
-      category: transaction.category,
+      categoryID: transaction.category in categoryIDMap ? categoryIDMap[transaction.category] : transaction.category,
       direction: transactionDirectionMap[transaction.direction],
       type: transactionTypeMap[transaction.type],
       walletID: transaction.wallet,

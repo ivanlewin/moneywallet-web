@@ -1,10 +1,10 @@
 import { createContext, Dispatch, ReactNode, SetStateAction, useContext, useState } from 'react';
-import { Wallet } from 'types/database';
+import { LegacyWallet } from 'types/legacy-database';
 
 type Query = {
   query?: string;
   filters: {
-    wallet: Wallet['id'];
+    wallet: LegacyWallet['id'];
   };
 };
 const QueryContext = createContext({

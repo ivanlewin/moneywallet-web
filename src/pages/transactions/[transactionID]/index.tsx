@@ -1,78 +1,78 @@
-import { NextPage } from 'next';
-import { useRouter } from 'next/router';
-
-import DeleteIcon from '@mui/icons-material/Delete';
-import EditIcon from '@mui/icons-material/Edit';
-import { IconButton, useTheme } from '@mui/material';
-import TransactionForm from 'components/Transactions/TransactionForm';
-import { useTransactionUtils } from 'contexts/TransactionUtils';
-import Link from 'next/link';
-import { useTransferUtils } from 'contexts/TransferUtils';
+import TransactionForm from 'components/transactions/TransactionForm';
+import { DATETIME_FORMAT } from 'const';
+import dayjs from 'dayjs';
+import { GetServerSideProps, InferGetServerSidePropsType } from 'next';
 import React from 'react';
-import { TransferIcon } from 'components/Icons';
+import { Serialized } from 'types/core';
 
-const TransactionDetail: NextPage = () => {
-  const theme = useTheme();
-  const router = useRouter();
-  const transactionID = router.query.transactionID as string;
+import {
+  Category, Currency, Event, Person, Place, Transaction, Transfer, Wallet
+} from '@prisma/client';
 
-  const { getCompleteTransaction } = useTransactionUtils();
-  const { getTransferByTransaction } = useTransferUtils();
-  const transaction = getCompleteTransaction(transactionID);
+export interface DetailedTransaction extends Omit<Serialized<Transaction>, 'wallet' | 'event' | 'people' | 'place' | 'category'> {
+  wallet: Pick<Wallet, 'id' | 'name'> & { currency: Pick<Currency, 'decimals' | 'iso' | 'symbol'>; };
+  event: Pick<Event, 'id' | 'name'> | null;
+  people: Pick<Person, 'id' | 'name'>[];
+  place: Pick<Place, 'id' | 'name'> | null;
+  category: Pick<Category, 'id' | 'name'>;
+  transfer: Pick<Transfer, 'id' | 'fromID' | 'toID'> | null;
+}
 
-  const transfer = React.useMemo(() => {
-    if (!transaction) { return; }
-    const isTransfer = transaction?.category?.id === 'system-uuid-system::transfer' || transaction?.category?.id === 'system-uuid-system::transfer_tax';
-    if (!isTransfer) { return; }
-    return getTransferByTransaction(transaction.id, transaction.direction);
-  }, [getTransferByTransaction, transaction]);
+export const getServerSideProps: GetServerSideProps<{ transaction: DetailedTransaction | null; }> = async ({ params }) => {
+  if (!params || !params.transactionID || typeof params.transactionID !== 'string') {
+    return { props: { transaction: null } };
+  }
+  const transactionID = params.transactionID;
+  const transaction = await prisma.transaction.findFirstOrThrow({
+    where: { id: transactionID },
+    include: {
+      wallet: {
+        select: {
+          id: true,
+          name: true,
+          currency: { select: { decimals: true, iso: true, symbol: true, } }
+        }
+      },
+      event: { select: { id: true, name: true, } },
+      people: { select: { id: true, name: true, } },
+      place: { select: { id: true, name: true, } }
+    }
+  });
+  const category = await prisma.category.findFirstOrThrow({
+    where: { id: transaction.categoryID },
+    select: { id: true, name: true, }
+  });
+  const transfer = await prisma.transfer.findFirst({
+    where: {
+      OR: [
+        { fromID: transaction.id },
+        { toID: transaction.id },
+      ]
+    },
+    select: {
+      id: true,
+      fromID: true,
+      toID: true,
+    }
+  });
+  return {
+    props: {
+      transaction: {
+        ...transaction,
+        date: dayjs(transaction.date).format(DATETIME_FORMAT),
+        lastEdit: dayjs(transaction.lastEdit).format(DATETIME_FORMAT),
+        category,
+        transfer
+      }
+    }
+  };
+};
+
+export default function TransactionDetail({ transaction }: InferGetServerSidePropsType<typeof getServerSideProps>) {
   if (!transaction) {
     return null;
   }
-
-  const actions = (
-    <>
-      {transfer ? (
-        <Link
-          href='/transfers/[transferID]/edit'
-          as={`/transfers/${transfer.id}/edit`}
-          title='Edit'
-          style={{ marginLeft: 'auto' }}
-        >
-          <IconButton title='Open the transfer detail' >
-            <TransferIcon htmlColor={theme.palette.common.white} />
-          </IconButton>
-        </Link>
-      ) : null}
-      <Link
-        href='/transactions/[transactionID]/edit'
-        as={`/transactions/${transaction.id}/edit`}
-        title='Edit'
-        style={{ marginLeft: transfer ? undefined : 'auto' }}
-      >
-        <IconButton title='Edit' >
-          <EditIcon htmlColor={theme.palette.common.white} />
-        </IconButton>
-      </Link>
-      <IconButton title='Delete' >
-        <DeleteIcon htmlColor={theme.palette.common.white} />
-      </IconButton>
-    </>
-  );
-
   return (
-    <TransactionForm
-      page='detail'
-      transaction={transaction}
-      transactionCategory={transaction.category}
-      transactionCurrency={transaction.currency}
-      transactionWallet={transaction.wallet}
-      transactionEvent={transaction.event}
-      transactionPeople={transaction.people}
-      transactionPlace={transaction.place}
-      actions={actions}
-    />
+    <TransactionForm page='detail' transaction={transaction} />
   );
 };
-
-export default TransactionDetail;

@@ -1,6 +1,6 @@
 import { Typography, TypographyProps } from "@mui/material";
 import { green, red } from "@mui/material/colors";
-import { TransactionDirection } from 'types/database';
+import { TransactionDirection } from '@prisma/client';
 import { signAmount } from "utils";
 import { formatCurrency } from "utils/formatting";
 
@@ -13,8 +13,8 @@ interface CurrencyDisplayProps extends TypographyProps {
 };
 export default function CurrencyDisplay({ amount, direction, currency, color, options = {}, ...props }: CurrencyDisplayProps) {
   const displayAsPositive = (
-    typeof direction === 'number' ?
-      direction === 1 :
+    typeof direction === 'string' ?
+      direction === 'INCOME' :
       signAmount(amount) >= 0
   );
   const amountColor = displayAsPositive ? green[500] : red[500];

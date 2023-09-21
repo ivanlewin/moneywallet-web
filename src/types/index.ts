@@ -1,18 +1,23 @@
-import { Category, Currency, Event, Person, Place, Transaction, Transfer, Wallet } from './database';
+import {
+  LegacyCategory, LegacyCurrency, LegacyEvent, LegacyPerson, LegacyPlace, LegacyTransaction,
+  LegacyTransfer, LegacyWallet
+} from './legacy-database';
 
-export type CompleteTransaction = Omit<Transaction, 'category' | 'wallet' | 'currency' | 'event' | 'place' | 'people'> & {
-  category?: Category;
-  wallet?: Wallet;
-  currency?: Currency;
-  event?: Event;
-  place?: Place;
-  people?: Person[];
+export type CompleteTransaction = Omit<LegacyTransaction, 'category' | 'wallet' | 'currency' | 'event' | 'place' | 'people'> & {
+  category?: LegacyCategory;
+  wallet?: LegacyWallet;
+  currency?: LegacyCurrency;
+  event?: LegacyEvent;
+  place?: LegacyPlace;
+  people?: LegacyPerson[];
 };
 
-export type CompleteTransfer = Omit<Transfer, 'from' | 'to'> & {
-  from?: Transaction;
-  to?: Transaction;
+export type CompleteTransfer = Omit<LegacyTransfer, 'from' | 'to'> & {
+  from?: LegacyTransaction;
+  to?: LegacyTransaction;
   money?: number;
 };
 
-export { };
+export type Prettify<T> = {
+  [K in keyof T]: T[K];
+} & {};

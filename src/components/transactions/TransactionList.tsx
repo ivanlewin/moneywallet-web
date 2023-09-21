@@ -1,39 +1,35 @@
-import { useDatabase } from 'contexts/DatabaseContext';
 import React from 'react';
-import { Transaction } from 'types/database';
 import { calculateBalance } from 'utils';
 import { formatDate } from 'utils/formatting';
 
 import { List, ListSubheader } from '@mui/material';
 
 import TransactionListItem from './TransactionListItem';
-import CurrencyDisplay from 'components/Currencies/CurrencyDisplay';
+import CurrencyDisplay from 'components/currencies/CurrencyDisplay';
+import { Transaction } from '@prisma/client';
+import { Serialized } from 'types/core';
 
 type transactionsByDate = {
-  [date: string]: Transaction[];
+  [date: string]: Serialized<Transaction>[];
 };
 
-export default function TransactionList() {
-  const { database } = useDatabase();
-  const { transactions } = database;
-  const transactions_ = transactions?.sort((a, b) => a.date.localeCompare(b.date)).filter(({ date }) => (date <= new Date().toISOString())).slice(-100); // TODO: replace Array.slice() with more robust solution
+interface TransactionListProps {
+  transactions: Serialized<Transaction>[];
+}
 
-  const transactionsByDate = React.useMemo<transactionsByDate>(() => {
-    if (!transactions_) {
-      return {};
-    }
-    const dates = transactions_
-      .map(transaction => transaction.date.split(' ')[0]) // only date, no time
-      .sort((a, b) => b.localeCompare(a)) // sort from most recent to oldest
-      .filter((v, i, a) => a.indexOf(v) === i);
-
-    return dates.reduce((acc, date) => ({
-      ...acc,
-      [date]: transactions_
-        .filter(transaction => transaction.date.split(' ')[0] === date)
-        .sort((a, b) => b.date.localeCompare(a.date))  // sort from most recent to oldest
-    }), {});
-  }, [transactions_]);
+export default function TransactionList({ transactions }: TransactionListProps) {
+  const transactionsByDate = React.useMemo<transactionsByDate>(() => (
+    transactions
+      .map(transaction => transaction.date.split('T')[0]) // get the date of the transaction
+      .sort((a, b) => b.localeCompare(a)) // sort dates from most recent to oldest
+      .filter((v, i, a) => a.indexOf(v) === i) // remove duplicates
+      .reduce((acc, date) => ({
+        ...acc,
+        [date]: transactions // group transactions by date
+          .filter(transaction => transaction.date.split('T')[0] === date)
+          .sort((a, b) => b.date.localeCompare(a.date))  // sort transactions for each day from most recent to oldest
+      }), {})
+  ), [transactions]);
 
   return (
     <List
